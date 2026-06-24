@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./docs/assets/z-labs-logo.png" alt="Z Labs Logo" width="360"/>
+<img src="https://github.com/user-attachments/assets/b8f70459-0361-439e-9d0c-b9c8c5ff316a" alt="Z Labs Logo" width="460"/>
 
 # Z Labs
 
