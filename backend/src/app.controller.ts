@@ -1,12 +1,22 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getHome() {
+    return {
+      app: 'Z-Entik API',
+      status: 'running',
+      message: 'Backend NestJS funcionando correctamente',
+    };
+  }
+
+  @Get('health')
+  getHealth() {
+    return {
+      status: 'ok',
+      service: 'Z-Entik API',
+      timestamp: new Date().toISOString(),
+    };
   }
 }
