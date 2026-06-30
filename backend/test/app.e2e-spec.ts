@@ -17,10 +17,11 @@ describe('AppController (e2e)', () => {
   });
 
   it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+    return request(app.getHttpServer()).get('/').expect(200).expect({
+      app: 'Z-Entik API',
+      status: 'running',
+      message: 'Backend NestJS funcionando correctamente',
+    });
   });
 
   afterEach(async () => {

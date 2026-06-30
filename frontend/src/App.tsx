@@ -7,11 +7,16 @@ type ApiStatus = {
   timestamp: string;
 };
 
+const apiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(
+  /\/$/,
+  '',
+);
+
 function App() {
   const [apiStatus, setApiStatus] = useState<ApiStatus | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:3000/health')
+    fetch(`${apiUrl}/health`)
       .then((response) => response.json())
       .then((data) => setApiStatus(data))
       .catch((error) => {
