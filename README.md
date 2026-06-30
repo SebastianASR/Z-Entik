@@ -38,7 +38,6 @@ Actualmente el proyecto se encuentra en etapa inicial de desarrollo.
 
 ### Hitos completados
 
-* Repositorio separado de Z-Commerce.
 * Frontend creado con React + TypeScript + Vite.
 * Backend creado con NestJS + TypeScript + Node.js.
 * Endpoint inicial `/health` implementado.
