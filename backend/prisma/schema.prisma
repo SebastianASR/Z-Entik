@@ -40,20 +40,22 @@ enum TicketCategory {
 }
 
 model User {
-  id                 String   @id @default(cuid())
+  id                 String    @id @default(cuid())
   name               String
-  email              String   @unique
+  email              String    @unique
   passwordHash       String
-  role               UserRole @default(USER)
-  isDemo             Boolean  @default(false)
-  isTwoFactorEnabled Boolean  @default(false)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  role               UserRole  @default(USER)
+  isDemo             Boolean   @default(false)
+  emailVerifiedAt    DateTime?
+  isTwoFactorEnabled Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
-  ticketsCreated  Ticket[]        @relation("TicketCreator")
-  ticketsAssigned Ticket[]        @relation("TicketAssignee")
-  comments        TicketComment[]
-  twoFactorCodes  TwoFactorCode[]
+  ticketsCreated          Ticket[]                 @relation("TicketCreator")
+  ticketsAssigned         Ticket[]                 @relation("TicketAssignee")
+  comments                TicketComment[]
+  twoFactorCodes          TwoFactorCode[]
+  emailVerificationTokens EmailVerificationToken[]
 }
 
 model Ticket {
@@ -96,4 +98,18 @@ model TwoFactorCode {
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }

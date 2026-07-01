@@ -7,6 +7,7 @@ export type AuthUser = {
   email: string;
   role: UserRole;
   isDemo: boolean;
+  emailVerifiedAt: Date | null;
   isTwoFactorEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;

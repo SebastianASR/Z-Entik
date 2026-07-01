@@ -36,6 +36,7 @@ const demoUsers = [
 ];
 
 async function main() {
+  const emailVerifiedAt = new Date();
   const passwordHash = await argon2.hash(demoPassword, {
     type: argon2.argon2id,
   });
@@ -47,6 +48,7 @@ async function main() {
         name: demoUser.name,
         role: demoUser.role,
         isDemo: true,
+        emailVerifiedAt,
       },
       create: {
         name: demoUser.name,
@@ -54,6 +56,7 @@ async function main() {
         passwordHash,
         role: demoUser.role,
         isDemo: true,
+        emailVerifiedAt,
       },
     });
   }

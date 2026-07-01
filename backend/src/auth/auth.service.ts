@@ -1,5 +1,7 @@
 import {
+  BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -10,6 +12,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuthUser } from './auth-user.type';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { EmailVerificationService } from './email-verification.service';
 import { getJwtExpiresIn } from './jwt.config';
 import { JwtPayload } from './jwt-payload.type';
 
@@ -18,14 +21,25 @@ type AuthResponse = {
   user: AuthUser;
 };
 
+type RegisterResponse = {
+  message: string;
+  user: AuthUser;
+};
+
+type VerifyEmailResponse = {
+  message: string;
+  user: AuthUser;
+};
+
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly emailVerificationService: EmailVerificationService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<AuthResponse> {
+  async register(dto: RegisterDto): Promise<RegisterResponse> {
     const email = dto.email.trim().toLowerCase();
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -45,10 +59,22 @@ export class AuthService {
         email,
         passwordHash,
         role: UserRole.USER,
+        isDemo: false,
       },
     });
 
-    return this.createAuthResponse(user);
+    const verificationToken =
+      await this.emailVerificationService.createVerificationToken(user.id);
+    await this.emailVerificationService.sendVerificationEmail(
+      user,
+      verificationToken,
+    );
+
+    return {
+      message:
+        'Registration successful. Please verify your email before logging in.',
+      user: this.toAuthUser(user),
+    };
   }
 
   async login(dto: LoginDto): Promise<AuthResponse> {
@@ -70,7 +96,28 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
+    if (!user.emailVerifiedAt) {
+      throw new ForbiddenException(
+        'Please verify your email before logging in',
+      );
+    }
+
     return this.createAuthResponse(user);
+  }
+
+  async verifyEmail(token: string): Promise<VerifyEmailResponse> {
+    try {
+      const user = await this.emailVerificationService.verifyEmailToken(token);
+
+      return {
+        message: 'Email verified successfully',
+        user: this.toAuthUser(user),
+      };
+    } catch {
+      throw new BadRequestException(
+        'Invalid or expired email verification token',
+      );
+    }
   }
 
   private async createAuthResponse(user: User): Promise<AuthResponse> {
@@ -98,6 +145,7 @@ export class AuthService {
       email: user.email,
       role: user.role,
       isDemo: user.isDemo,
+      emailVerifiedAt: user.emailVerifiedAt,
       isTwoFactorEnabled: user.isTwoFactorEnabled,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
