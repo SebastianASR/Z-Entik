@@ -10,11 +10,14 @@ import { User, UserRole } from '@prisma/client';
 import * as argon2 from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthUser } from './auth-user.type';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { EmailVerificationService } from './email-verification.service';
 import { getJwtExpiresIn } from './jwt.config';
 import { JwtPayload } from './jwt-payload.type';
+import { PasswordResetService } from './password-reset.service';
 
 type AuthResponse = {
   accessToken: string;
@@ -31,12 +34,17 @@ type VerifyEmailResponse = {
   user: AuthUser;
 };
 
+type MessageResponse = {
+  message: string;
+};
+
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly emailVerificationService: EmailVerificationService,
+    private readonly passwordResetService: PasswordResetService,
   ) {}
 
   async register(dto: RegisterDto): Promise<RegisterResponse> {
@@ -118,6 +126,62 @@ export class AuthService {
         'Invalid or expired email verification token',
       );
     }
+  }
+
+  async forgotPassword(dto: ForgotPasswordDto): Promise<MessageResponse> {
+    const email = dto.email.trim().toLowerCase();
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (user) {
+      const resetToken = await this.passwordResetService.createResetToken(
+        user.id,
+      );
+      await this.passwordResetService.sendPasswordResetEmail(user, resetToken);
+    }
+
+    return {
+      message:
+        'If the email is registered, password reset instructions will be sent.',
+    };
+  }
+
+  async resetPassword(dto: ResetPasswordDto): Promise<MessageResponse> {
+    if (dto.newPassword !== dto.confirmPassword) {
+      throw new BadRequestException('Password confirmation does not match');
+    }
+
+    const resetToken = await this.passwordResetService.findValidResetToken(
+      dto.token,
+    );
+
+    if (!resetToken) {
+      throw new BadRequestException('Invalid or expired password reset token');
+    }
+
+    const passwordHash = await argon2.hash(dto.newPassword, {
+      type: argon2.argon2id,
+    });
+    const usedAt = new Date();
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: resetToken.userId },
+        data: { passwordHash },
+      }),
+      this.prisma.passwordResetToken.updateMany({
+        where: {
+          userId: resetToken.userId,
+          usedAt: null,
+        },
+        data: { usedAt },
+      }),
+    ]);
+
+    return {
+      message: 'Password updated successfully. You can now log in.',
+    };
   }
 
   private async createAuthResponse(user: User): Promise<AuthResponse> {
