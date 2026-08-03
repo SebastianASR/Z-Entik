@@ -14,15 +14,29 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { TwoFactorCodeDto } from './dto/two-factor-code.dto';
+import { VerifyTwoFactorLoginDto } from './dto/verify-two-factor-login.dto';
 import { EmailVerificationService } from './email-verification.service';
-import { getJwtExpiresIn } from './jwt.config';
+import { getJwtExpiresIn, getTwoFactorLoginTokenExpiresIn } from './jwt.config';
 import { JwtPayload } from './jwt-payload.type';
 import { PasswordResetService } from './password-reset.service';
+import {
+  TWO_FACTOR_CODE_PURPOSE,
+  TwoFactorService,
+} from './two-factor.service';
 
 type AuthResponse = {
   accessToken: string;
   user: AuthUser;
 };
+
+type TwoFactorLoginRequiredResponse = {
+  twoFactorRequired: true;
+  twoFactorToken: string;
+  message: string;
+};
+
+type LoginResponse = AuthResponse | TwoFactorLoginRequiredResponse;
 
 type RegisterResponse = {
   message: string;
@@ -38,6 +52,12 @@ type MessageResponse = {
   message: string;
 };
 
+type TwoFactorLoginTokenPayload = {
+  sub: string;
+  email: string;
+  purpose: '2fa-login';
+};
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -45,6 +65,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly emailVerificationService: EmailVerificationService,
     private readonly passwordResetService: PasswordResetService,
+    private readonly twoFactorService: TwoFactorService,
   ) {}
 
   async register(dto: RegisterDto): Promise<RegisterResponse> {
@@ -85,7 +106,7 @@ export class AuthService {
     };
   }
 
-  async login(dto: LoginDto): Promise<AuthResponse> {
+  async login(dto: LoginDto): Promise<LoginResponse> {
     const email = dto.email.trim().toLowerCase();
     const user = await this.prisma.user.findUnique({
       where: { email },
@@ -108,6 +129,45 @@ export class AuthService {
       throw new ForbiddenException(
         'Please verify your email before logging in',
       );
+    }
+
+    if (user.isTwoFactorEnabled) {
+      return this.createTwoFactorLoginResponse(user);
+    }
+
+    return this.createAuthResponse(user);
+  }
+
+  async verifyTwoFactorLogin(
+    dto: VerifyTwoFactorLoginDto,
+  ): Promise<AuthResponse> {
+    const payload = await this.verifyTwoFactorLoginToken(dto.twoFactorToken);
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+    });
+
+    if (!user || user.email !== payload.email) {
+      throw new UnauthorizedException('Invalid or expired 2FA token');
+    }
+
+    if (!user.emailVerifiedAt) {
+      throw new ForbiddenException(
+        'Please verify your email before logging in',
+      );
+    }
+
+    if (!user.isTwoFactorEnabled) {
+      throw new BadRequestException('Two-factor authentication is not enabled');
+    }
+
+    const isCodeValid = await this.twoFactorService.verifyCode(
+      user.id,
+      TWO_FACTOR_CODE_PURPOSE.LOGIN,
+      dto.code,
+    );
+
+    if (!isCodeValid) {
+      throw new BadRequestException('Invalid or expired 2FA code');
     }
 
     return this.createAuthResponse(user);
@@ -182,6 +242,173 @@ export class AuthService {
     return {
       message: 'Password updated successfully. You can now log in.',
     };
+  }
+
+  async requestEnableTwoFactor(authUser: AuthUser): Promise<MessageResponse> {
+    const user = await this.findUserForTwoFactor(authUser.id);
+
+    if (!user.emailVerifiedAt) {
+      throw new ForbiddenException(
+        'Please verify your email before enabling 2FA',
+      );
+    }
+
+    if (user.isTwoFactorEnabled) {
+      throw new BadRequestException(
+        'Two-factor authentication is already enabled',
+      );
+    }
+
+    await this.twoFactorService.createAndSendCode(
+      user,
+      TWO_FACTOR_CODE_PURPOSE.ENABLE,
+    );
+
+    return {
+      message: 'Se envi\u00f3 un c\u00f3digo de verificaci\u00f3n a tu correo.',
+    };
+  }
+
+  async confirmEnableTwoFactor(
+    authUser: AuthUser,
+    dto: TwoFactorCodeDto,
+  ): Promise<MessageResponse> {
+    const user = await this.findUserForTwoFactor(authUser.id);
+
+    if (!user.emailVerifiedAt) {
+      throw new ForbiddenException(
+        'Please verify your email before enabling 2FA',
+      );
+    }
+
+    if (user.isTwoFactorEnabled) {
+      throw new BadRequestException(
+        'Two-factor authentication is already enabled',
+      );
+    }
+
+    const isCodeValid = await this.twoFactorService.verifyCode(
+      user.id,
+      TWO_FACTOR_CODE_PURPOSE.ENABLE,
+      dto.code,
+    );
+
+    if (!isCodeValid) {
+      throw new BadRequestException('Invalid or expired 2FA code');
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { isTwoFactorEnabled: true },
+    });
+
+    return {
+      message:
+        'La autenticaci\u00f3n en dos factores fue activada correctamente.',
+    };
+  }
+
+  async requestDisableTwoFactor(authUser: AuthUser): Promise<MessageResponse> {
+    const user = await this.findUserForTwoFactor(authUser.id);
+
+    if (!user.isTwoFactorEnabled) {
+      throw new BadRequestException('Two-factor authentication is not enabled');
+    }
+
+    await this.twoFactorService.createAndSendCode(
+      user,
+      TWO_FACTOR_CODE_PURPOSE.DISABLE,
+    );
+
+    return {
+      message: 'Se envi\u00f3 un c\u00f3digo de confirmaci\u00f3n a tu correo.',
+    };
+  }
+
+  async confirmDisableTwoFactor(
+    authUser: AuthUser,
+    dto: TwoFactorCodeDto,
+  ): Promise<MessageResponse> {
+    const user = await this.findUserForTwoFactor(authUser.id);
+
+    if (!user.isTwoFactorEnabled) {
+      throw new BadRequestException('Two-factor authentication is not enabled');
+    }
+
+    const isCodeValid = await this.twoFactorService.verifyCode(
+      user.id,
+      TWO_FACTOR_CODE_PURPOSE.DISABLE,
+      dto.code,
+    );
+
+    if (!isCodeValid) {
+      throw new BadRequestException('Invalid or expired 2FA code');
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { isTwoFactorEnabled: false },
+    });
+
+    return {
+      message:
+        'La autenticaci\u00f3n en dos factores fue desactivada correctamente.',
+    };
+  }
+
+  private async createTwoFactorLoginResponse(
+    user: User,
+  ): Promise<TwoFactorLoginRequiredResponse> {
+    await this.twoFactorService.createAndSendCode(
+      user,
+      TWO_FACTOR_CODE_PURPOSE.LOGIN,
+    );
+
+    const payload: TwoFactorLoginTokenPayload = {
+      sub: user.id,
+      email: user.email,
+      purpose: '2fa-login',
+    };
+    const twoFactorToken = await this.jwtService.signAsync(payload, {
+      expiresIn: getTwoFactorLoginTokenExpiresIn(),
+    });
+
+    return {
+      twoFactorRequired: true,
+      twoFactorToken,
+      message: 'Se envi\u00f3 un c\u00f3digo de verificaci\u00f3n a tu correo.',
+    };
+  }
+
+  private async verifyTwoFactorLoginToken(
+    twoFactorToken: string,
+  ): Promise<TwoFactorLoginTokenPayload> {
+    try {
+      const payload =
+        await this.jwtService.verifyAsync<TwoFactorLoginTokenPayload>(
+          twoFactorToken,
+        );
+
+      if (payload.purpose !== '2fa-login') {
+        throw new Error('Invalid 2FA token purpose');
+      }
+
+      return payload;
+    } catch {
+      throw new UnauthorizedException('Invalid or expired 2FA token');
+    }
+  }
+
+  private async findUserForTwoFactor(userId: string): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Authentication is required');
+    }
+
+    return user;
   }
 
   private async createAuthResponse(user: User): Promise<AuthResponse> {

@@ -19,7 +19,9 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { TwoFactorCodeDto } from './dto/two-factor-code.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
+import { VerifyTwoFactorLoginDto } from './dto/verify-two-factor-login.dto';
 import { DemoUserGuard } from './guards/demo-user.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -36,6 +38,11 @@ export class AuthController {
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @Post('2fa/verify-login')
+  verifyTwoFactorLogin(@Body() dto: VerifyTwoFactorLoginDto) {
+    return this.authService.verifyTwoFactorLogin(dto);
   }
 
   @Post('verify-email')
@@ -88,6 +95,36 @@ export class AuthController {
   @Get('me')
   getMe(@CurrentUser() user: AuthUser) {
     return user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('2fa/request-enable')
+  requestEnableTwoFactor(@CurrentUser() user: AuthUser) {
+    return this.authService.requestEnableTwoFactor(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('2fa/confirm-enable')
+  confirmEnableTwoFactor(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: TwoFactorCodeDto,
+  ) {
+    return this.authService.confirmEnableTwoFactor(user, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('2fa/request-disable')
+  requestDisableTwoFactor(@CurrentUser() user: AuthUser) {
+    return this.authService.requestDisableTwoFactor(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('2fa/confirm-disable')
+  confirmDisableTwoFactor(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: TwoFactorCodeDto,
+  ) {
+    return this.authService.confirmDisableTwoFactor(user, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

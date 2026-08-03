@@ -39,6 +39,12 @@ enum TicketCategory {
   OTHER
 }
 
+enum TwoFactorCodePurpose {
+  LOGIN
+  ENABLE
+  DISABLE
+}
+
 model User {
   id                 String    @id @default(cuid())
   name               String
@@ -91,14 +97,18 @@ model TicketComment {
 }
 
 model TwoFactorCode {
-  id        String   @id @default(cuid())
-  code      String
+  id        String               @id @default(cuid())
+  codeHash  String
+  purpose   TwoFactorCodePurpose
   expiresAt DateTime
-  used      Boolean  @default(false)
-  createdAt DateTime @default(now())
+  usedAt    DateTime?
+  createdAt DateTime             @default(now())
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+  @@index([expiresAt])
 }
 
 model EmailVerificationToken {

@@ -5,4 +5,5 @@ export type JwtPayload = {
   email: string;
   role: UserRole;
   isDemo: boolean;
+  purpose?: string;
 };
