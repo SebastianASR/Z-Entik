@@ -241,6 +241,7 @@ El proyecto implementa una autenticacion mas completa que un login tradicional.
 
 * Hash seguro de contraseñas con Argon2id.
 * Autenticacion con JWT.
+* Política de Contraseña Robusta
 * Guards de NestJS para proteger rutas.
 * Control de acceso basado en roles.
 * Validacion de datos de entrada con DTOs.
@@ -698,8 +699,8 @@ Ingeniero en Informatica
 Perfil orientado a desarrollo **Backend / Full-Stack**  
 Santiago, Chile
 
-* [LinkedIn](https://www.linkedin.com/in/sebastian-andre-sandoval-romero-115710296/)
-* [Email](mailto:sandoval.romero.sebastian@gmail.com)
+* [LinkedIn](https://www.linkedin.com/in/sebasti%C3%A1n-andr%C3%A9-sandoval-romero-115710296/)
+* [Email] sandoval.romero.sebastian@gmail.com
 
 ---
 
