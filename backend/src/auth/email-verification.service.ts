@@ -4,6 +4,7 @@ import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   BrevoEmailError,
+  getBrevoUserMessage,
   isBrevoEmailConfigured,
   sendBrevoEmail,
 } from './brevo-email.client';
@@ -98,7 +99,7 @@ export class EmailVerificationService {
       }
 
       throw new ServiceUnavailableException(
-        'No pudimos enviar el correo de verificación.',
+        'Brevo no esta configurado en Render. Revisa BREVO_API_KEY y BREVO_SENDER_EMAIL.',
       );
     }
 
@@ -161,7 +162,9 @@ export class EmailVerificationService {
   private handleBrevoError(error: unknown, kind: string): never {
     if (error instanceof BrevoEmailError) {
       console.error(error.message);
-      throw new ServiceUnavailableException(`No pudimos enviar el ${kind}.`);
+      throw new ServiceUnavailableException(
+        `${getBrevoUserMessage(error)} No pudimos enviar el ${kind}.`,
+      );
     }
 
     console.error(error);

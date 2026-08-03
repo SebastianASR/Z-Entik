@@ -5,6 +5,7 @@ import * as argon2 from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   BrevoEmailError,
+  getBrevoUserMessage,
   isBrevoEmailConfigured,
   sendBrevoEmail,
 } from './brevo-email.client';
@@ -142,7 +143,9 @@ export class TwoFactorService {
         return;
       }
 
-      throw new ServiceUnavailableException('No pudimos enviar el código 2FA.');
+      throw new ServiceUnavailableException(
+        'Brevo no esta configurado en Render. Revisa BREVO_API_KEY y BREVO_SENDER_EMAIL.',
+      );
     }
 
     const copy = this.getEmailCopy(purpose);
@@ -181,7 +184,9 @@ export class TwoFactorService {
   private handleBrevoError(error: unknown, kind: string): never {
     if (error instanceof BrevoEmailError) {
       console.error(error.message);
-      throw new ServiceUnavailableException(`No pudimos enviar el ${kind}.`);
+      throw new ServiceUnavailableException(
+        `${getBrevoUserMessage(error)} No pudimos enviar el ${kind}.`,
+      );
     }
 
     console.error(error);

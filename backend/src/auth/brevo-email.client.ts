@@ -15,8 +15,13 @@ type BrevoConfig = {
   senderName: string;
 };
 
+export type BrevoEmailErrorReason = 'missing-config' | 'network' | 'rejected';
+
 export class BrevoEmailError extends Error {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    readonly reason: BrevoEmailErrorReason,
+  ) {
     super(message);
     this.name = 'BrevoEmailError';
   }
@@ -34,6 +39,7 @@ export async function sendBrevoEmail(
   if (!config) {
     throw new BrevoEmailError(
       '[Brevo] faltan BREVO_API_KEY o BREVO_SENDER_EMAIL.',
+      'missing-config',
     );
   }
 
@@ -66,6 +72,7 @@ export async function sendBrevoEmail(
   } catch (error) {
     throw new BrevoEmailError(
       `[Brevo] no se pudo conectar para enviar ${payload.kind}: ${getErrorMessage(error)}`,
+      'network',
     );
   }
 
@@ -74,12 +81,25 @@ export async function sendBrevoEmail(
   if (!response.ok) {
     throw new BrevoEmailError(
       `[Brevo] rechazo ${payload.kind} con status ${response.status}: ${sanitizeBrevoResponse(responseText)}`,
+      'rejected',
     );
   }
 
   console.log(
     `[Brevo] acepto ${payload.kind} para ${maskEmail(payload.toEmail)}${formatMessageId(responseText)}.`,
   );
+}
+
+export function getBrevoUserMessage(error: BrevoEmailError): string {
+  if (error.reason === 'missing-config') {
+    return 'Brevo no esta configurado en Render. Revisa BREVO_API_KEY y BREVO_SENDER_EMAIL.';
+  }
+
+  if (error.reason === 'network') {
+    return 'Render no pudo conectarse con Brevo. Revisa los logs del deploy y vuelve a intentar.';
+  }
+
+  return 'Brevo rechazo el envio. Revisa los logs de Render para ver el status y el detalle seguro.';
 }
 
 function getBrevoConfig(): BrevoConfig | null {
