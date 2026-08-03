@@ -703,6 +703,13 @@ p {
   color: #536a7b;
 }
 
+.password-requirements {
+  margin-top: -8px;
+  color: var(--subtle);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .alert {
   display: grid;
   gap: 4px;

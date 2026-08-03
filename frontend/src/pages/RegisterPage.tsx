@@ -6,6 +6,18 @@ import { Alert } from '../components/ui/Alert';
 import { Button } from '../components/ui/Button';
 import { TextField } from '../components/ui/TextField';
 
+const PASSWORD_REQUIREMENTS_MESSAGE =
+  'La contraseña debe tener al menos 8 caracteres e incluir una mayúscula, un número y un símbolo.';
+
+function isStrongPassword(password: string): boolean {
+  return (
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /\d/.test(password) &&
+    /[^A-Za-z0-9]/.test(password)
+  );
+}
+
 export function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -20,8 +32,8 @@ export function RegisterPage() {
     setError('');
     setSuccess('');
 
-    if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.');
+    if (!isStrongPassword(password)) {
+      setError(PASSWORD_REQUIREMENTS_MESSAGE);
       return;
     }
 
@@ -88,8 +100,11 @@ export function RegisterPage() {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           minLength={8}
+          pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$"
+          title={PASSWORD_REQUIREMENTS_MESSAGE}
           required
         />
+        <p className="password-requirements">{PASSWORD_REQUIREMENTS_MESSAGE}</p>
         <TextField
           label="Confirmar contraseña"
           name="confirmPassword"
