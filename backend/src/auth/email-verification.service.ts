@@ -132,15 +132,14 @@ export class EmailVerificationService {
   }
 
   private buildVerificationUrl(token: string): string {
-    const isProduction = process.env.NODE_ENV === 'production';
     const defaultBackendUrl = `http://localhost:${process.env.PORT ?? 3000}`;
-    const baseUrl = isProduction
-      ? (process.env.APP_FRONTEND_URL ??
-        process.env.FRONTEND_URL ??
-        'http://localhost:5173')
-      : defaultBackendUrl;
-    const path = isProduction ? '/verify-email' : '/auth/verify-email';
-    const url = new URL(path, baseUrl);
+    const baseUrl =
+      process.env.APP_BACKEND_URL?.trim() ||
+      process.env.BACKEND_URL?.trim() ||
+      process.env.RENDER_EXTERNAL_URL?.trim() ||
+      defaultBackendUrl;
+    this.logLinkBase('verificacion de correo', baseUrl);
+    const url = new URL('/auth/verify-email', baseUrl);
     url.searchParams.set('token', token);
 
     return url.toString();
@@ -157,6 +156,10 @@ export class EmailVerificationService {
     console.log(
       `Enlace de verificacion para ${email} (solo desarrollo): ${verificationUrl}`,
     );
+  }
+
+  private logLinkBase(kind: string, baseUrl: string): void {
+    console.log(`[Auth links] ${kind} usa base ${baseUrl}.`);
   }
 
   private handleBrevoError(error: unknown, kind: string): never {
