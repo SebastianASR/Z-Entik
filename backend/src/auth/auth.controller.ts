@@ -133,7 +133,7 @@ export class AuthController {
   getAdminCheck(@CurrentUser() user: AuthUser) {
     return {
       status: 'ok',
-      message: 'Admin access granted',
+      message: 'Acceso de administrador concedido',
       user: {
         id: user.id,
         email: user.email,
@@ -149,7 +149,7 @@ export class AuthController {
   getStaffCheck(@CurrentUser() user: AuthUser) {
     return {
       status: 'ok',
-      message: 'Staff access granted',
+      message: 'Acceso de equipo tecnico concedido',
       user: {
         id: user.id,
         email: user.email,
@@ -165,7 +165,7 @@ export class AuthController {
   getDemoProtectedCheck(@CurrentUser() user: AuthUser) {
     return {
       status: 'ok',
-      message: 'Non-demo access granted',
+      message: 'Acceso de cuenta no demo concedido',
       user: {
         id: user.id,
         email: user.email,

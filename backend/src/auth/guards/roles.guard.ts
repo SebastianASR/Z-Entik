@@ -28,11 +28,11 @@ export class RolesGuard implements CanActivate {
     const user = request.user;
 
     if (!user) {
-      throw new UnauthorizedException('Authentication is required');
+      throw new UnauthorizedException('Debes iniciar sesion');
     }
 
     if (!requiredRoles.includes(user.role)) {
-      throw new ForbiddenException('Insufficient role for this resource');
+      throw new ForbiddenException('Tu rol no permite acceder a este recurso');
     }
 
     return true;

@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: JwtPayload): Promise<AuthUser> {
     if (Object.prototype.hasOwnProperty.call(payload, 'purpose')) {
-      throw new UnauthorizedException('Invalid authentication token');
+      throw new UnauthorizedException('Token de autenticacion no valido');
     }
 
     const user = await this.prisma.user.findUnique({
@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid authentication token');
+      throw new UnauthorizedException('Token de autenticacion no valido');
     }
 
     return {

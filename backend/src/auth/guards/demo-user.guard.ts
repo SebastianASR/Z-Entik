@@ -27,12 +27,12 @@ export class DemoUserGuard implements CanActivate {
     const user = request.user;
 
     if (!user) {
-      throw new UnauthorizedException('Authentication is required');
+      throw new UnauthorizedException('Debes iniciar sesion');
     }
 
     if (user.isDemo) {
       throw new ForbiddenException(
-        'Demo users cannot perform critical actions',
+        'Las cuentas demo no pueden realizar acciones criticas',
       );
     }
 

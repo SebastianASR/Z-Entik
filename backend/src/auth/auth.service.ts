@@ -75,7 +75,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new ConflictException('Email is already registered');
+      throw new ConflictException('Este correo ya esta registrado');
     }
 
     const passwordHash = await argon2.hash(dto.password, {
@@ -100,8 +100,7 @@ export class AuthService {
     );
 
     return {
-      message:
-        'Registration successful. Please verify your email before logging in.',
+      message: 'Registro exitoso. Verifica tu correo antes de iniciar sesion.',
       user: this.toAuthUser(user),
     };
   }
@@ -113,7 +112,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Correo o contrasena incorrectos');
     }
 
     const isPasswordValid = await argon2.verify(
@@ -122,12 +121,12 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Correo o contrasena incorrectos');
     }
 
     if (!user.emailVerifiedAt) {
       throw new ForbiddenException(
-        'Please verify your email before logging in',
+        'Debes verificar tu correo antes de iniciar sesion',
       );
     }
 
@@ -147,17 +146,21 @@ export class AuthService {
     });
 
     if (!user || user.email !== payload.email) {
-      throw new UnauthorizedException('Invalid or expired 2FA token');
+      throw new UnauthorizedException(
+        'La verificacion 2FA expiro o no es valida',
+      );
     }
 
     if (!user.emailVerifiedAt) {
       throw new ForbiddenException(
-        'Please verify your email before logging in',
+        'Debes verificar tu correo antes de iniciar sesion',
       );
     }
 
     if (!user.isTwoFactorEnabled) {
-      throw new BadRequestException('Two-factor authentication is not enabled');
+      throw new BadRequestException(
+        'La autenticacion en dos factores no esta activada',
+      );
     }
 
     const isCodeValid = await this.twoFactorService.verifyCode(
@@ -167,7 +170,7 @@ export class AuthService {
     );
 
     if (!isCodeValid) {
-      throw new BadRequestException('Invalid or expired 2FA code');
+      throw new BadRequestException('El codigo 2FA no es valido o expiro');
     }
 
     return this.createAuthResponse(user);
@@ -178,12 +181,12 @@ export class AuthService {
       const user = await this.emailVerificationService.verifyEmailToken(token);
 
       return {
-        message: 'Email verified successfully',
+        message: 'Correo verificado correctamente',
         user: this.toAuthUser(user),
       };
     } catch {
       throw new BadRequestException(
-        'Invalid or expired email verification token',
+        'El enlace de verificacion no es valido o expiro',
       );
     }
   }
@@ -203,13 +206,13 @@ export class AuthService {
 
     return {
       message:
-        'If the email is registered, password reset instructions will be sent.',
+        'Si el correo existe, recibiras instrucciones para restablecer tu contrasena.',
     };
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<MessageResponse> {
     if (dto.newPassword !== dto.confirmPassword) {
-      throw new BadRequestException('Password confirmation does not match');
+      throw new BadRequestException('Las contrasenas no coinciden');
     }
 
     const resetToken = await this.passwordResetService.findValidResetToken(
@@ -217,7 +220,9 @@ export class AuthService {
     );
 
     if (!resetToken) {
-      throw new BadRequestException('Invalid or expired password reset token');
+      throw new BadRequestException(
+        'El enlace para restablecer la contrasena no es valido o expiro',
+      );
     }
 
     const passwordHash = await argon2.hash(dto.newPassword, {
@@ -240,7 +245,8 @@ export class AuthService {
     ]);
 
     return {
-      message: 'Password updated successfully. You can now log in.',
+      message:
+        'Contrasena actualizada correctamente. Ya puedes iniciar sesion.',
     };
   }
 
@@ -249,13 +255,13 @@ export class AuthService {
 
     if (!user.emailVerifiedAt) {
       throw new ForbiddenException(
-        'Please verify your email before enabling 2FA',
+        'Debes verificar tu correo antes de activar 2FA',
       );
     }
 
     if (user.isTwoFactorEnabled) {
       throw new BadRequestException(
-        'Two-factor authentication is already enabled',
+        'La autenticacion en dos factores ya esta activada',
       );
     }
 
@@ -277,13 +283,13 @@ export class AuthService {
 
     if (!user.emailVerifiedAt) {
       throw new ForbiddenException(
-        'Please verify your email before enabling 2FA',
+        'Debes verificar tu correo antes de activar 2FA',
       );
     }
 
     if (user.isTwoFactorEnabled) {
       throw new BadRequestException(
-        'Two-factor authentication is already enabled',
+        'La autenticacion en dos factores ya esta activada',
       );
     }
 
@@ -294,7 +300,7 @@ export class AuthService {
     );
 
     if (!isCodeValid) {
-      throw new BadRequestException('Invalid or expired 2FA code');
+      throw new BadRequestException('El codigo 2FA no es valido o expiro');
     }
 
     await this.prisma.user.update({
@@ -312,7 +318,9 @@ export class AuthService {
     const user = await this.findUserForTwoFactor(authUser.id);
 
     if (!user.isTwoFactorEnabled) {
-      throw new BadRequestException('Two-factor authentication is not enabled');
+      throw new BadRequestException(
+        'La autenticacion en dos factores no esta activada',
+      );
     }
 
     await this.twoFactorService.createAndSendCode(
@@ -332,7 +340,9 @@ export class AuthService {
     const user = await this.findUserForTwoFactor(authUser.id);
 
     if (!user.isTwoFactorEnabled) {
-      throw new BadRequestException('Two-factor authentication is not enabled');
+      throw new BadRequestException(
+        'La autenticacion en dos factores no esta activada',
+      );
     }
 
     const isCodeValid = await this.twoFactorService.verifyCode(
@@ -342,7 +352,7 @@ export class AuthService {
     );
 
     if (!isCodeValid) {
-      throw new BadRequestException('Invalid or expired 2FA code');
+      throw new BadRequestException('El codigo 2FA no es valido o expiro');
     }
 
     await this.prisma.user.update({
@@ -390,12 +400,14 @@ export class AuthService {
         );
 
       if (payload.purpose !== '2fa-login') {
-        throw new Error('Invalid 2FA token purpose');
+        throw new Error('Proposito de token 2FA no valido');
       }
 
       return payload;
     } catch {
-      throw new UnauthorizedException('Invalid or expired 2FA token');
+      throw new UnauthorizedException(
+        'La verificacion 2FA expiro o no es valida',
+      );
     }
   }
 
@@ -405,7 +417,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Authentication is required');
+      throw new UnauthorizedException('Debes iniciar sesion');
     }
 
     return user;

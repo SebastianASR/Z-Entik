@@ -9,7 +9,7 @@ export class ResetPasswordDto {
   @MinLength(8)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, {
     message:
-      'newPassword must contain at least one uppercase letter, one lowercase letter, and one number',
+      'La nueva contrasena debe incluir al menos una mayuscula, una minuscula y un numero',
   })
   newPassword: string;
 
