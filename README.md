@@ -43,7 +43,7 @@ Actualmente el proyecto cuenta con una version funcional desplegada en Render.
 * API REST protegida con JWT y guards.
 * Registro e inicio de sesion implementados.
 * Verificacion de correo con Brevo.
-* Recuperacion de contrasena por correo.
+* Recuperacion de contraseña por correo.
 * 2FA por correo para login y configuracion de seguridad.
 * Roles diferenciados: usuario, tecnico, administrador y demo admin.
 * Modulo HelpDesk de tickets implementado.
@@ -116,9 +116,9 @@ Z-Entik busca representar un sistema HelpDesk TI moderno con funcionalidades com
 
 * Registro e inicio de sesion de usuarios.
 * Autenticacion segura mediante JWT.
-* Hash seguro de contrasenas con Argon2.
+* Hash seguro de contraseñas con Argon2id.
 * Verificacion de correo por Brevo.
-* Recuperacion de contrasena por correo.
+* Recuperacion de contraseña por correo.
 * Verificacion en dos pasos por correo.
 * Roles diferenciados.
 * Creacion y gestion de tickets.
@@ -210,14 +210,14 @@ El proyecto implementa una autenticacion mas completa que un login tradicional.
 
 ### Caracteristicas de seguridad
 
-* Hash seguro de contrasenas con Argon2.
+* Hash seguro de contraseñas con Argon2id.
 * Autenticacion con JWT.
 * Guards de NestJS para proteger rutas.
 * Control de acceso basado en roles.
 * Validacion de datos de entrada con DTOs.
 * Variables de entorno para secretos.
 * Verificacion de correo por Brevo.
-* Recuperacion de contrasena por token temporal.
+* Recuperacion de contraseña por token temporal.
 * Verificacion en dos pasos por correo.
 * Tokens temporales separados para login 2FA.
 * Proteccion de rutas privadas en frontend.
@@ -227,11 +227,11 @@ El proyecto implementa una autenticacion mas completa que un login tradicional.
 ### Autenticacion proyectada
 
 ```txt
-Usuario ingresa correo y contrasena
+Usuario ingresa correo y contraseña
         ↓
 Backend valida credenciales
         ↓
-Se verifica hash de contrasena
+Se verifica hash de contraseña
         ↓
 Si la cuenta tiene 2FA activo, se genera codigo temporal
         ↓
@@ -299,7 +299,7 @@ Tambien existe flujo para activar y desactivar 2FA desde la seccion de seguridad
 * Services
 * Controllers
 * Modules
-* Argon2
+* Argon2id
 * Passport JWT
 
 ### Base de Datos
@@ -313,9 +313,9 @@ Tambien existe flujo para activar y desactivar 2FA desde la seccion de seguridad
 ### Autenticacion y Seguridad
 
 * JWT
-* Hash seguro de contrasenas
+* Hash seguro de contraseñas
 * Verificacion de correo
-* Recuperacion de contrasena
+* Recuperacion de contraseña
 * 2FA por correo
 * Brevo API
 * Variables de entorno
@@ -603,7 +603,7 @@ User 1 --- N TwoFactorCode
 
 * Registro de usuarios.
 * Login.
-* Hash seguro de contrasenas.
+* Hash seguro de contraseñas.
 * JWT.
 * Guards de autenticacion.
 * Roles.
@@ -651,7 +651,7 @@ User 1 --- N TwoFactorCode
 * Backend funcional con NestJS, Prisma y PostgreSQL.
 * Autenticacion JWT implementada.
 * Verificacion de correo implementada con Brevo.
-* Recuperacion de contrasena implementada.
+* Recuperacion de contraseña implementada.
 * 2FA por correo implementado.
 * Roles y guards implementados.
 * Tickets HelpDesk implementados.
