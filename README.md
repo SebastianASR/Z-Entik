@@ -32,13 +32,13 @@ Puedes probar Z-Entik desplegado en Render desde el siguiente enlace:
 
 ### Login y seguridad
 
-![Vista previa Z-Entik 3](https://github.com/user-attachments/assets/a399aeac-7d27-4827-8940-7088a80a4def)
+![Vista previa Z-Entik 3](https://github.com/user-attachments/assets/1a012a26-8244-47ac-a3b4-90ad1b1637f4)
 
 ![Vista previa Z-Entik 4](https://github.com/user-attachments/assets/ff87e01f-d952-441f-86ec-284d0d4d4561)
 
 ### Dashboard HelpDesk
 
-![Vista previa Z-Entik 5](https://github.com/user-attachments/assets/1a012a26-8244-47ac-a3b4-90ad1b1637f4)
+![Vista previa Z-Entik 5](https://github.com/user-attachments/assets/a399aeac-7d27-4827-8940-7088a80a4def)
 
 
 ---
