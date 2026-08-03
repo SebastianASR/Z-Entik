@@ -1,8 +1,13 @@
 import { randomBytes, randomInt } from 'node:crypto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import * as argon2 from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  BrevoEmailError,
+  isBrevoEmailConfigured,
+  sendBrevoEmail,
+} from './brevo-email.client';
 
 type TwoFactorEmailUser = Pick<User, 'id' | 'name' | 'email'>;
 
@@ -127,47 +132,33 @@ export class TwoFactorService {
     code: string,
     purpose: TwoFactorCodePurpose,
   ): Promise<void> {
-    const apiKey = process.env.BREVO_API_KEY;
-    const senderEmail = process.env.BREVO_SENDER_EMAIL;
-    const senderName = process.env.BREVO_SENDER_NAME ?? 'Z-Entik';
-
-    if (!apiKey || !senderEmail) {
+    if (!isBrevoEmailConfigured()) {
       this.logDevelopmentCode(user.email, code, purpose);
-      console.warn('Brevo email is not configured. 2FA email was not sent.');
-      return;
+      console.warn(
+        '[Brevo] correo 2FA no enviado: falta BREVO_API_KEY o BREVO_SENDER_EMAIL.',
+      );
+
+      if (process.env.NODE_ENV !== 'production') {
+        return;
+      }
+
+      throw new ServiceUnavailableException('No pudimos enviar el código 2FA.');
     }
 
     const copy = this.getEmailCopy(purpose);
-    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        'api-key': apiKey,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        sender: {
-          email: senderEmail,
-          name: senderName,
-        },
-        to: [
-          {
-            email: user.email,
-            name: user.name,
-          },
-        ],
+
+    try {
+      await sendBrevoEmail({
+        kind: `correo 2FA ${purpose}`,
+        toEmail: user.email,
+        toName: user.name,
         subject: copy.subject,
         htmlContent: this.buildHtmlContent(user.name, code, copy),
         textContent: this.buildTextContent(code, copy),
-      }),
-    });
-
-    if (!response.ok) {
-      const responseText = await response.text();
-      console.error(
-        `Brevo 2FA email request failed with status ${response.status}: ${responseText}`,
-      );
+      });
+    } catch (error) {
       this.logDevelopmentCode(user.email, code, purpose);
+      this.handleBrevoError(error, 'código 2FA');
     }
   }
 
@@ -185,6 +176,16 @@ export class TwoFactorService {
     }
 
     console.log(`2FA ${purpose} code for ${email} (development only): ${code}`);
+  }
+
+  private handleBrevoError(error: unknown, kind: string): never {
+    if (error instanceof BrevoEmailError) {
+      console.error(error.message);
+      throw new ServiceUnavailableException(`No pudimos enviar el ${kind}.`);
+    }
+
+    console.error(error);
+    throw new ServiceUnavailableException(`No pudimos enviar el ${kind}.`);
   }
 
   private getEmailCopy(purpose: TwoFactorCodePurpose): TwoFactorEmailCopy {

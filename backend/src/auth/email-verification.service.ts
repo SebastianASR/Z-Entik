@@ -1,7 +1,12 @@
 import { createHash, randomBytes } from 'node:crypto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  BrevoEmailError,
+  isBrevoEmailConfigured,
+  sendBrevoEmail,
+} from './brevo-email.client';
 
 type VerificationEmailUser = Pick<User, 'id' | 'name' | 'email'>;
 
@@ -81,56 +86,33 @@ export class EmailVerificationService {
     token: string,
   ): Promise<void> {
     const verificationUrl = this.buildVerificationUrl(token);
-    const apiKey = process.env.BREVO_API_KEY;
-    const senderEmail = process.env.BREVO_SENDER_EMAIL;
-    const senderName = process.env.BREVO_SENDER_NAME ?? 'Z-Entik';
 
-    if (!apiKey || !senderEmail) {
+    if (!isBrevoEmailConfigured()) {
       this.logDevelopmentVerificationLink(user.email, verificationUrl);
       console.warn(
-        'Brevo email is not configured. Verification email was not sent.',
+        '[Brevo] correo de verificacion no enviado: falta BREVO_API_KEY o BREVO_SENDER_EMAIL.',
       );
-      return;
-    }
 
-    try {
-      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-        method: 'POST',
-        headers: {
-          accept: 'application/json',
-          'api-key': apiKey,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          sender: {
-            email: senderEmail,
-            name: senderName,
-          },
-          to: [
-            {
-              email: user.email,
-              name: user.name,
-            },
-          ],
-          subject: 'Verifica tu correo en Z-Entik',
-          htmlContent: this.buildHtmlContent(user.name, verificationUrl),
-          textContent: this.buildTextContent(verificationUrl),
-        }),
-      });
-
-      if (!response.ok) {
-        const responseText = await response.text();
-        console.error(
-          `Brevo verification email request failed with status ${response.status}: ${responseText}`,
-        );
+      if (process.env.NODE_ENV !== 'production') {
         return;
       }
 
-      this.logBrevoAccepted(user.email);
-    } catch (error) {
-      console.error(
-        `Brevo verification email request could not be completed: ${this.getErrorMessage(error)}`,
+      throw new ServiceUnavailableException(
+        'No pudimos enviar el correo de verificación.',
       );
+    }
+
+    try {
+      await sendBrevoEmail({
+        kind: 'correo de verificacion',
+        toEmail: user.email,
+        toName: user.name,
+        subject: 'Verifica tu correo en Z-Entik',
+        htmlContent: this.buildHtmlContent(user.name, verificationUrl),
+        textContent: this.buildTextContent(verificationUrl),
+      });
+    } catch (error) {
+      this.handleBrevoError(error, 'correo de verificacion');
     }
   }
 
@@ -176,28 +158,14 @@ export class EmailVerificationService {
     );
   }
 
-  private logBrevoAccepted(email: string): void {
-    if (process.env.NODE_ENV === 'production') {
-      return;
+  private handleBrevoError(error: unknown, kind: string): never {
+    if (error instanceof BrevoEmailError) {
+      console.error(error.message);
+      throw new ServiceUnavailableException(`No pudimos enviar el ${kind}.`);
     }
 
-    console.log(
-      `Brevo accepted verification email request for ${this.maskEmail(email)}.`,
-    );
-  }
-
-  private getErrorMessage(error: unknown): string {
-    return error instanceof Error ? error.message : 'Error desconocido';
-  }
-
-  private maskEmail(email: string): string {
-    const [localPart, domain] = email.split('@');
-
-    if (!localPart || !domain) {
-      return '[correo invalido]';
-    }
-
-    return `${localPart.slice(0, 2)}***@${domain}`;
+    console.error(error);
+    throw new ServiceUnavailableException(`No pudimos enviar el ${kind}.`);
   }
 
   private buildHtmlContent(name: string, verificationUrl: string): string {
