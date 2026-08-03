@@ -12,6 +12,35 @@ Z Labs es mi marca personal de desarrollo de software, enfocada en construir apl
 
 </div>
 
+## 🚀 Demo en producción
+
+Puedes probar Z-Entik desplegado en Render desde el siguiente enlace:
+
+🔗 **Frontend:** [https://z-entik-web.onrender.com/](https://z-entik-web.onrender.com/)
+
+> La demo incluye usuarios de prueba para explorar el sistema como usuario normal, técnico y demo admin. También puedes registrarte (con correos reales por verificación).
+
+---
+
+## 🖼️ Vista previa
+
+### Landing y diseño principal
+
+![Vista previa Z-Entik 1](https://github.com/user-attachments/assets/3ed312df-c06b-4ca3-9d72-d6d3cf9c83a8)
+
+![Vista previa Z-Entik 2](https://github.com/user-attachments/assets/4627c078-5bd7-4633-a772-32fa21660511)
+
+### Login y seguridad
+
+![Vista previa Z-Entik 3](https://github.com/user-attachments/assets/a399aeac-7d27-4827-8940-7088a80a4def)
+
+![Vista previa Z-Entik 4](https://github.com/user-attachments/assets/ff87e01f-d952-441f-86ec-284d0d4d4561)
+
+### Dashboard HelpDesk
+
+![Vista previa Z-Entik 5](https://github.com/user-attachments/assets/1a012a26-8244-47ac-a3b4-90ad1b1637f4)
+
+
 ---
 
 # Z-ENTIK - Sistema HelpDesk TI Full Stack
