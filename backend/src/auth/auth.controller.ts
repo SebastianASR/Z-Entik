@@ -144,7 +144,23 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.TECHNICIAN)
+  @Roles(UserRole.ADMIN, UserRole.DEMOADMIN)
+  @Get('demo-admin-check')
+  getDemoAdminCheck(@CurrentUser() user: AuthUser) {
+    return {
+      status: 'ok',
+      message: 'Acceso administrativo demo concedido',
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        isDemo: user.isDemo,
+      },
+    };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.DEMOADMIN, UserRole.TECHNICIAN)
   @Get('staff-check')
   getStaffCheck(@CurrentUser() user: AuthUser) {
     return {

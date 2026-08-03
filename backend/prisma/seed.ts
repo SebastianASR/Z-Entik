@@ -31,7 +31,7 @@ const demoUsers = [
   {
     name: 'Demo Admin',
     email: 'admin.demo@zentik.dev',
-    role: UserRole.ADMIN,
+    role: UserRole.DEMOADMIN,
   },
 ];
 

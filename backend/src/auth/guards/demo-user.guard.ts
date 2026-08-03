@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { UserRole } from '@prisma/client';
 import { AuthenticatedRequest } from '../auth-user.type';
 import { BLOCK_DEMO_USERS_KEY } from '../decorators/block-demo-users.decorator';
 
@@ -30,7 +31,7 @@ export class DemoUserGuard implements CanActivate {
       throw new UnauthorizedException('Debes iniciar sesion');
     }
 
-    if (user.isDemo) {
+    if (user.isDemo || user.role === UserRole.DEMOADMIN) {
       throw new ForbiddenException(
         'Las cuentas demo no pueden realizar acciones criticas',
       );
