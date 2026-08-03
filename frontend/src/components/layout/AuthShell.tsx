@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import heroImage from '../../assets/hero.png';
 import { ActionLink } from '../ui/ActionLink';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import { AppFooter } from './AppFooter';
 
 type AuthShellProps = {
@@ -19,13 +20,16 @@ export function AuthShell({
   return (
     <main className="auth-shell">
       <section className="auth-brand-panel">
-        <ActionLink to="/" className="brand-mark">
-          <span>Z</span>
-          <div>
-            <strong>Z-Entik</strong>
-            <small>Z Labs</small>
-          </div>
-        </ActionLink>
+        <div className="auth-panel-top">
+          <ActionLink to="/" className="brand-mark">
+            <span>Z</span>
+            <div>
+              <strong>Z-Entik</strong>
+              <small>Z Labs</small>
+            </div>
+          </ActionLink>
+          <ThemeToggle />
+        </div>
         <div className="auth-visual">
           <img src={heroImage} alt="" />
           <div>

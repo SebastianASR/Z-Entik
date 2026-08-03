@@ -23,24 +23,24 @@ export function ResetPasswordPage() {
     setSuccess('');
 
     if (!token) {
-      setError('El enlace no incluye un token valido.');
+      setError('El enlace no incluye un token válido.');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Las contrasenas no coinciden.');
+      setError('Las contraseñas no coinciden.');
       return;
     }
 
     setIsLoading(true);
     try {
       await authApi.resetPassword({ token, newPassword, confirmPassword });
-      setSuccess('Contrasena actualizada. Ya puedes iniciar sesion.');
+      setSuccess('Contraseña actualizada. Ya puedes iniciar sesión.');
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : 'No pudimos actualizar la contrasena.',
+          : 'No pudimos actualizar la contraseña.',
       );
     } finally {
       setIsLoading(false);
@@ -49,13 +49,13 @@ export function ResetPasswordPage() {
 
   return (
     <AuthShell
-      eyebrow="Nueva contrasena"
+      eyebrow="Nueva contraseña"
       title="Protege tu cuenta"
-      description="Crea una contrasena nueva para recuperar el acceso a Z-Entik."
+      description="Crea una contraseña nueva para recuperar el acceso a Z-Entik."
     >
       <div className="form-heading">
         <p className="eyebrow">Seguridad</p>
-        <h2>Restablecer contrasena</h2>
+        <h2>Restablecer contraseña</h2>
       </div>
 
       {error ? <Alert type="error" message={error} /> : null}
@@ -63,7 +63,7 @@ export function ResetPasswordPage() {
 
       <form className="stack-form" onSubmit={handleSubmit}>
         <TextField
-          label="Nueva contrasena"
+          label="Nueva contraseña"
           name="newPassword"
           type="password"
           value={newPassword}
@@ -72,7 +72,7 @@ export function ResetPasswordPage() {
           required
         />
         <TextField
-          label="Confirmar contrasena"
+          label="Confirmar contraseña"
           name="confirmPassword"
           type="password"
           value={confirmPassword}
@@ -81,12 +81,12 @@ export function ResetPasswordPage() {
           required
         />
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Actualizando...' : 'Actualizar contrasena'}
+          {isLoading ? 'Actualizando...' : 'Actualizar contraseña'}
         </Button>
       </form>
 
       <div className="form-links">
-        <ActionLink to="/login">Ir a iniciar sesion</ActionLink>
+        <ActionLink to="/login">Ir a iniciar sesión</ActionLink>
       </div>
     </AuthShell>
   );

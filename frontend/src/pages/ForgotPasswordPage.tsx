@@ -19,7 +19,7 @@ export function ForgotPasswordPage() {
       await authApi.forgotPassword({ email });
     } finally {
       setMessage(
-        'Si el correo existe, recibiras instrucciones para restablecer tu contrasena.',
+        'Si el correo existe, recibirás instrucciones para restablecer tu contraseña.',
       );
       setIsLoading(false);
     }
@@ -33,7 +33,7 @@ export function ForgotPasswordPage() {
     >
       <div className="form-heading">
         <p className="eyebrow">Cuenta</p>
-        <h2>Olvide mi contrasena</h2>
+        <h2>Olvidé mi contraseña</h2>
       </div>
 
       {message ? <Alert type="success" message={message} /> : null}
@@ -53,7 +53,7 @@ export function ForgotPasswordPage() {
       </form>
 
       <div className="form-links">
-        <ActionLink to="/login">Volver a iniciar sesion</ActionLink>
+        <ActionLink to="/login">Volver a iniciar sesión</ActionLink>
       </div>
     </AuthShell>
   );

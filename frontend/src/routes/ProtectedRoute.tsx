@@ -10,7 +10,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
       <main className="screen-center">
         <div className="loader-card">
           <span className="loader-dot" />
-          Preparando tu sesion segura...
+          Preparando tu sesión segura...
         </div>
       </main>
     );

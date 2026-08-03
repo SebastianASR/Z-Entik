@@ -19,7 +19,7 @@ export function TwoFactorLoginPage() {
     setError('');
 
     if (!twoFactorToken) {
-      setError('No encontramos una verificacion 2FA pendiente.');
+      setError('No encontramos una verificación 2FA pendiente.');
       return;
     }
 
@@ -32,7 +32,7 @@ export function TwoFactorLoginPage() {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : 'No pudimos validar el codigo.',
+          : 'No pudimos validar el código.',
       );
     } finally {
       setIsLoading(false);
@@ -43,18 +43,18 @@ export function TwoFactorLoginPage() {
     <AuthShell
       eyebrow="Segundo factor"
       title="Confirma tu acceso"
-      description="Ingresa el codigo de 6 digitos enviado a tu correo. Este token temporal no abre rutas protegidas."
+      description="Ingresa el código de 6 dígitos enviado a tu correo. Este token temporal no abre rutas protegidas."
     >
       <div className="form-heading">
         <p className="eyebrow">2FA por correo</p>
-        <h2>Verificacion de inicio de sesion</h2>
+        <h2>Verificación de inicio de sesión</h2>
       </div>
 
       {error ? <Alert type="error" message={error} /> : null}
       {!twoFactorToken ? (
         <Alert
           type="warning"
-          message="Debes iniciar sesion nuevamente para solicitar un codigo."
+          message="Debes iniciar sesión nuevamente para solicitar un código."
         />
       ) : null}
 

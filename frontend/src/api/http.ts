@@ -29,7 +29,7 @@ export class ApiError extends Error {
 
 const defaultErrorMessages: Record<number, string> = {
   400: 'La solicitud no es valida.',
-  401: 'Tu sesion expiro o no tienes autorizacion.',
+  401: 'Tu sesión expiró o no tienes autorización.',
   403: 'No tienes permiso para realizar esta accion.',
   404: 'No encontramos el recurso solicitado.',
   409: 'Ya existe un registro con esos datos.',
@@ -37,23 +37,23 @@ const defaultErrorMessages: Record<number, string> = {
 };
 
 const backendMessages: Record<string, string> = {
-  'Invalid email or password': 'Correo o contrasena incorrectos.',
+  'Invalid email or password': 'Correo o contraseña incorrectos.',
   'Please verify your email before logging in':
-    'Debes verificar tu correo antes de iniciar sesion.',
+    'Debes verificar tu correo antes de iniciar sesión.',
   'Email is already registered': 'Este correo ya esta registrado.',
   'Invalid or expired email verification token':
-    'El enlace de verificacion no es valido o expiro.',
+    'El enlace de verificación no es válido o expiró.',
   'If the email is registered, password reset instructions will be sent.':
-    'Si el correo existe, recibiras instrucciones para restablecer tu contrasena.',
-  'Password confirmation does not match': 'Las contrasenas no coinciden.',
+    'Si el correo existe, recibirás instrucciones para restablecer tu contraseña.',
+  'Password confirmation does not match': 'Las contraseñas no coinciden.',
   'Invalid or expired password reset token':
-    'El enlace para restablecer la contrasena no es valido o expiro.',
-  'Invalid or expired 2FA token': 'La verificacion 2FA expiro o no es valida.',
+    'El enlace para restablecer la contraseña no es válido o expiró.',
+  'Invalid or expired 2FA token': 'La verificación 2FA expiró o no es válida.',
   'Two-factor authentication is not enabled':
     'La autenticacion en dos factores no esta activada.',
   'Two-factor authentication is already enabled':
     'La autenticacion en dos factores ya esta activada.',
-  'Invalid or expired 2FA code': 'El codigo 2FA no es valido o expiro.',
+  'Invalid or expired 2FA code': 'El código 2FA no es válido o expiró.',
 };
 
 export async function apiRequest<T>(

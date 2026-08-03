@@ -1,14 +1,17 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { DashboardPage } from '../pages/DashboardPage';
-import { ForgotPasswordPage } from '../pages/ForgotPasswordPage';
-import { LandingPage } from '../pages/LandingPage';
-import { LoginPage } from '../pages/LoginPage';
-import { RegisterPage } from '../pages/RegisterPage';
-import { ResetPasswordPage } from '../pages/ResetPasswordPage';
-import { SecuritySettingsPage } from '../pages/SecuritySettingsPage';
-import { TwoFactorLoginPage } from '../pages/TwoFactorLoginPage';
-import { VerifyEmailPage } from '../pages/VerifyEmailPage';
-import { ProtectedRoute } from './ProtectedRoute';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { CreateTicketPage } from "../pages/CreateTicketPage";
+import { DashboardPage } from "../pages/DashboardPage";
+import { ForgotPasswordPage } from "../pages/ForgotPasswordPage";
+import { LandingPage } from "../pages/LandingPage";
+import { LoginPage } from "../pages/LoginPage";
+import { RegisterPage } from "../pages/RegisterPage";
+import { ResetPasswordPage } from "../pages/ResetPasswordPage";
+import { SecuritySettingsPage } from "../pages/SecuritySettingsPage";
+import { TicketDetailPage } from "../pages/TicketDetailPage";
+import { TicketsPage } from "../pages/TicketsPage";
+import { TwoFactorLoginPage } from "../pages/TwoFactorLoginPage";
+import { VerifyEmailPage } from "../pages/VerifyEmailPage";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export function AppRouter() {
   return (
@@ -26,6 +29,30 @@ export function AppRouter() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tickets"
+          element={
+            <ProtectedRoute>
+              <TicketsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tickets/new"
+          element={
+            <ProtectedRoute>
+              <CreateTicketPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tickets/:id"
+          element={
+            <ProtectedRoute>
+              <TicketDetailPage />
             </ProtectedRoute>
           }
         />

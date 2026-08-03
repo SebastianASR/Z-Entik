@@ -3,19 +3,20 @@ import heroImage from '../assets/hero.png';
 import { AppFooter } from '../components/layout/AppFooter';
 import { ActionLink } from '../components/ui/ActionLink';
 import { Button } from '../components/ui/Button';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
 
 const benefits = [
   {
-    title: 'Gestion de tickets',
+    title: 'Gestión de tickets',
     text: 'Base visual preparada para ordenar solicitudes, prioridades y seguimiento interno.',
   },
   {
     title: 'Roles y seguridad',
-    text: 'Accesos diferenciados para usuarios, tecnicos y administradores.',
+    text: 'Accesos diferenciados para usuarios, técnicos y administradores.',
   },
   {
     title: '2FA por correo',
-    text: 'Verificacion adicional para proteger sesiones sensibles.',
+    text: 'Verificación adicional para proteger sesiones sensibles.',
   },
   {
     title: 'Soporte organizado',
@@ -36,10 +37,13 @@ export function LandingPage() {
             <small>Z Labs</small>
           </div>
         </ActionLink>
-        <nav>
-          <ActionLink to="/login">Iniciar sesion</ActionLink>
-          <ActionLink to="/register">Crear cuenta</ActionLink>
-        </nav>
+        <div className="topbar-actions">
+          <nav>
+            <ActionLink to="/login">Iniciar sesión</ActionLink>
+            <ActionLink to="/register">Crear cuenta</ActionLink>
+          </nav>
+          <ThemeToggle />
+        </div>
       </header>
 
       <section className="landing-hero">
@@ -51,7 +55,7 @@ export function LandingPage() {
             interno.
           </p>
           <div className="hero-actions">
-            <Button onClick={() => navigate('/login')}>Iniciar sesion</Button>
+            <Button onClick={() => navigate('/login')}>Iniciar sesión</Button>
             <Button variant="secondary" onClick={() => navigate('/register')}>
               Crear cuenta
             </Button>
@@ -84,7 +88,7 @@ export function LandingPage() {
       <section className="landing-band">
         <div>
           <p className="eyebrow">Producto SaaS moderno</p>
-          <h2>Autenticacion, verificacion y 2FA ya integrados</h2>
+          <h2>Autenticación, verificación y 2FA ya integrados</h2>
         </div>
         <ActionLink className="button button-primary" to="/login">
           Entrar al panel

@@ -1,9 +1,10 @@
-import type { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/useAuth';
-import { ActionLink } from '../ui/ActionLink';
-import { Button } from '../ui/Button';
-import { AppFooter } from './AppFooter';
+import type { ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/useAuth";
+import { ActionLink } from "../ui/ActionLink";
+import { Button } from "../ui/Button";
+import { ThemeToggle } from "../ui/ThemeToggle";
+import { AppFooter } from "./AppFooter";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const { logout, user } = useAuth();
@@ -21,10 +22,12 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         </ActionLink>
         <nav className="sidebar-nav">
           <ActionLink to="/dashboard">Panel</ActionLink>
+          <ActionLink to="/tickets">Tickets</ActionLink>
+          <ActionLink to="/tickets/new">Crear ticket</ActionLink>
           <ActionLink to="/settings/security">Seguridad</ActionLink>
         </nav>
         <div className="sidebar-user">
-          <small>Sesion activa</small>
+          <small>Sesión activa</small>
           <strong>{user?.name}</strong>
           <span>{user?.email}</span>
         </div>
@@ -35,15 +38,18 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
             <p className="eyebrow">HelpDesk TI</p>
             <h1>Centro operativo Z-Entik</h1>
           </div>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              logout();
-              navigate('/login');
-            }}
-          >
-            Cerrar sesion
-          </Button>
+          <div className="dashboard-header-actions">
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}
+            >
+              Cerrar sesión
+            </Button>
+          </div>
         </header>
         {children}
         <AppFooter />

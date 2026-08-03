@@ -21,21 +21,19 @@ export function RegisterPage() {
     setSuccess('');
 
     if (password.length < 8) {
-      setError('La contrasena debe tener al menos 8 caracteres.');
+      setError('La contraseña debe tener al menos 8 caracteres.');
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Las contrasenas no coinciden.');
+      setError('Las contraseñas no coinciden.');
       return;
     }
 
     setIsLoading(true);
     try {
-      await authApi.register({ name, email, password });
-      setSuccess(
-        'Cuenta creada. Revisa tu correo para verificar tu direccion antes de iniciar sesion.',
-      );
+      const response = await authApi.register({ name, email, password });
+      setSuccess(response.message);
       setName('');
       setEmail('');
       setPassword('');
@@ -55,12 +53,12 @@ export function RegisterPage() {
     <AuthShell
       eyebrow="Nueva cuenta"
       title="Crea tu acceso Z-Entik"
-      description="Registro con verificacion por correo para mantener el entorno de soporte bajo control."
+      description="Registro con verificación por correo para mantener el entorno de soporte bajo control."
     >
       <div className="form-heading">
         <p className="eyebrow">Onboarding seguro</p>
         <h2>Crear cuenta</h2>
-        <p>No iniciaremos sesion automaticamente hasta que verifiques tu correo.</p>
+        <p>No iniciaremos sesión automáticamente hasta que verifiques tu correo.</p>
       </div>
 
       {error ? <Alert type="error" message={error} /> : null}
@@ -84,7 +82,7 @@ export function RegisterPage() {
           required
         />
         <TextField
-          label="Contrasena"
+          label="Contraseña"
           name="password"
           type="password"
           value={password}
@@ -93,7 +91,7 @@ export function RegisterPage() {
           required
         />
         <TextField
-          label="Confirmar contrasena"
+          label="Confirmar contraseña"
           name="confirmPassword"
           type="password"
           value={confirmPassword}

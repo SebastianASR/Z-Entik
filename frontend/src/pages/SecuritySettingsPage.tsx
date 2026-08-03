@@ -1,41 +1,42 @@
-import { useState } from 'react';
-import { authApi } from '../api/authApi';
-import { SecurityCodeForm } from '../components/auth/SecurityCodeForm';
-import { DashboardLayout } from '../components/layout/DashboardLayout';
-import { Alert } from '../components/ui/Alert';
-import { Button } from '../components/ui/Button';
-import { StatusPill } from '../components/ui/StatusPill';
-import { useAuth } from '../context/useAuth';
+import { useState } from "react";
+import { authApi } from "../api/authApi";
+import { SecurityCodeForm } from "../components/auth/SecurityCodeForm";
+import { DashboardLayout } from "../components/layout/DashboardLayout";
+import { Alert } from "../components/ui/Alert";
+import { Button } from "../components/ui/Button";
+import { StatusPill } from "../components/ui/StatusPill";
+import { useAuth } from "../context/useAuth";
+import { formatRole, isDemoAdmin } from "../utils/roleLabels";
 
-type Flow = 'enable' | 'disable' | null;
+type Flow = "enable" | "disable" | null;
 
 export function SecuritySettingsPage() {
   const { token, user, refreshUser } = useAuth();
   const [flow, setFlow] = useState<Flow>(null);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   async function requestFlow(nextFlow: Exclude<Flow, null>) {
     if (!token) return;
-    setMessage('');
-    setError('');
+    setMessage("");
+    setError("");
     setIsLoading(true);
 
     try {
-      if (nextFlow === 'enable') {
+      if (nextFlow === "enable") {
         await authApi.requestEnableTwoFactor(token);
-        setMessage('Te enviamos un codigo para activar 2FA.');
+        setMessage("Te enviamos un código para activar 2FA.");
       } else {
         await authApi.requestDisableTwoFactor(token);
-        setMessage('Te enviamos un codigo para desactivar 2FA.');
+        setMessage("Te enviamos un código para desactivar 2FA.");
       }
       setFlow(nextFlow);
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : 'No pudimos iniciar el flujo de seguridad.',
+          : "No pudimos iniciar el flujo de seguridad.",
       );
     } finally {
       setIsLoading(false);
@@ -44,17 +45,17 @@ export function SecuritySettingsPage() {
 
   async function confirmFlow(code: string) {
     if (!token || !flow) return;
-    setMessage('');
-    setError('');
+    setMessage("");
+    setError("");
     setIsLoading(true);
 
     try {
-      if (flow === 'enable') {
+      if (flow === "enable") {
         await authApi.confirmEnableTwoFactor(token, code);
-        setMessage('2FA quedo activado correctamente.');
+        setMessage("2FA quedo activado correctamente.");
       } else {
         await authApi.confirmDisableTwoFactor(token, code);
-        setMessage('2FA quedo desactivado correctamente.');
+        setMessage("2FA quedo desactivado correctamente.");
       }
       setFlow(null);
       await refreshUser();
@@ -62,7 +63,7 @@ export function SecuritySettingsPage() {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : 'No pudimos confirmar el codigo.',
+          : "No pudimos confirmar el código.",
       );
     } finally {
       setIsLoading(false);
@@ -78,15 +79,19 @@ export function SecuritySettingsPage() {
               <p className="eyebrow">Seguridad de cuenta</p>
               <h2>Controles de acceso</h2>
             </div>
-            <StatusPill tone={user?.isTwoFactorEnabled ? 'good' : 'warn'}>
-              {user?.isTwoFactorEnabled ? '2FA activo' : '2FA inactivo'}
+            <StatusPill tone={user?.isTwoFactorEnabled ? "good" : "warn"}>
+              {user?.isTwoFactorEnabled ? "2FA activo" : "2FA inactivo"}
             </StatusPill>
           </div>
 
-          {user?.isDemo ? (
+          {user?.isDemo || isDemoAdmin(user?.role) ? (
             <Alert
               type="warning"
-              message="Esta es una cuenta demo. Algunas acciones pueden estar restringidas."
+              message={
+                isDemoAdmin(user?.role)
+                  ? "Esta cuenta demo permite explorar vistas administrativas, pero no puede ejecutar acciones destructivas."
+                  : "Esta es una cuenta demo. Algunas acciones pueden estar restringidas."
+              }
             />
           ) : null}
           {message ? <Alert type="success" message={message} /> : null}
@@ -95,19 +100,19 @@ export function SecuritySettingsPage() {
           <dl className="detail-list">
             <div>
               <dt>Correo verificado</dt>
-              <dd>{user?.emailVerifiedAt ? 'Si' : 'No'}</dd>
+              <dd>{user?.emailVerifiedAt ? "Si" : "No"}</dd>
             </div>
             <div>
               <dt>2FA</dt>
-              <dd>{user?.isTwoFactorEnabled ? 'Activado' : 'Desactivado'}</dd>
+              <dd>{user?.isTwoFactorEnabled ? "Activado" : "Desactivado"}</dd>
             </div>
             <div>
               <dt>Rol</dt>
-              <dd>{user?.role}</dd>
+              <dd>{formatRole(user?.role)}</dd>
             </div>
             <div>
               <dt>Tipo de cuenta</dt>
-              <dd>{user?.isDemo ? 'Demo' : 'Estandar'}</dd>
+              <dd>{user?.isDemo ? "Demo" : "Estandar"}</dd>
             </div>
           </dl>
 
@@ -117,14 +122,14 @@ export function SecuritySettingsPage() {
                 <Button
                   variant="danger"
                   disabled={isLoading}
-                  onClick={() => void requestFlow('disable')}
+                  onClick={() => void requestFlow("disable")}
                 >
                   Desactivar 2FA
                 </Button>
               ) : (
                 <Button
                   disabled={isLoading || !user?.emailVerifiedAt}
-                  onClick={() => void requestFlow('enable')}
+                  onClick={() => void requestFlow("enable")}
                 >
                   Activar 2FA
                 </Button>
@@ -136,18 +141,18 @@ export function SecuritySettingsPage() {
         <article className="content-panel">
           <p className="eyebrow">Confirmacion por correo</p>
           <h2>
-            {flow === 'disable'
-              ? 'Confirma la desactivacion'
-              : 'Confirma la activacion'}
+            {flow === "disable"
+              ? "Confirma la desactivacion"
+              : "Confirma la activacion"}
           </h2>
           <p className="muted-text">
-            Solicita el codigo y revisa tu correo. El codigo se marca como usado
+            Solicita el código y revisa tu correo. El código se marca como usado
             al confirmar y no puede reutilizarse.
           </p>
           {flow ? (
             <SecurityCodeForm
               submitLabel={
-                flow === 'disable' ? 'Confirmar desactivacion' : 'Confirmar 2FA'
+                flow === "disable" ? "Confirmar desactivacion" : "Confirmar 2FA"
               }
               isLoading={isLoading}
               onSubmit={confirmFlow}

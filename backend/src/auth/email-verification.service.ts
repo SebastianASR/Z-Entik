@@ -93,34 +93,43 @@ export class EmailVerificationService {
       return;
     }
 
-    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        'api-key': apiKey,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        sender: {
-          email: senderEmail,
-          name: senderName,
+    try {
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'api-key': apiKey,
+          'content-type': 'application/json',
         },
-        to: [
-          {
-            email: user.email,
-            name: user.name,
+        body: JSON.stringify({
+          sender: {
+            email: senderEmail,
+            name: senderName,
           },
-        ],
-        subject: 'Verifica tu correo en Z-Entik',
-        htmlContent: this.buildHtmlContent(user.name, verificationUrl),
-        textContent: this.buildTextContent(verificationUrl),
-      }),
-    });
+          to: [
+            {
+              email: user.email,
+              name: user.name,
+            },
+          ],
+          subject: 'Verifica tu correo en Z-Entik',
+          htmlContent: this.buildHtmlContent(user.name, verificationUrl),
+          textContent: this.buildTextContent(verificationUrl),
+        }),
+      });
 
-    if (!response.ok) {
-      const responseText = await response.text();
+      if (!response.ok) {
+        const responseText = await response.text();
+        console.error(
+          `Brevo verification email request failed with status ${response.status}: ${responseText}`,
+        );
+        return;
+      }
+
+      this.logBrevoAccepted(user.email);
+    } catch (error) {
       console.error(
-        `Brevo email request failed with status ${response.status}: ${responseText}`,
+        `Brevo verification email request could not be completed: ${this.getErrorMessage(error)}`,
       );
     }
   }
@@ -163,8 +172,32 @@ export class EmailVerificationService {
     }
 
     console.log(
-      `Email verification link for ${email} (development only): ${verificationUrl}`,
+      `Enlace de verificacion para ${email} (solo desarrollo): ${verificationUrl}`,
     );
+  }
+
+  private logBrevoAccepted(email: string): void {
+    if (process.env.NODE_ENV === 'production') {
+      return;
+    }
+
+    console.log(
+      `Brevo accepted verification email request for ${this.maskEmail(email)}.`,
+    );
+  }
+
+  private getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : 'Error desconocido';
+  }
+
+  private maskEmail(email: string): string {
+    const [localPart, domain] = email.split('@');
+
+    if (!localPart || !domain) {
+      return '[correo invalido]';
+    }
+
+    return `${localPart.slice(0, 2)}***@${domain}`;
   }
 
   private buildHtmlContent(name: string, verificationUrl: string): string {

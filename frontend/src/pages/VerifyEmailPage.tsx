@@ -28,7 +28,7 @@ export function VerifyEmailPage() {
     <AuthShell
       eyebrow="Verificacion de correo"
       title="Validando identidad"
-      description="Z-Entik confirma tu direccion antes de habilitar el acceso a la plataforma."
+      description="Z-Entik confirma tu dirección antes de habilitar el acceso a la plataforma."
     >
       <div className="form-heading">
         <p className="eyebrow">Correo</p>
@@ -42,19 +42,19 @@ export function VerifyEmailPage() {
         <Alert
           type="success"
           title="Correo verificado"
-          message="Tu cuenta quedo lista para iniciar sesion."
+          message="Tu cuenta quedó lista para iniciar sesión."
         />
       ) : null}
       {status === 'error' ? (
         <Alert
           type="error"
           title="No pudimos verificar el correo"
-          message="El enlace puede ser invalido, haber expirado o haber sido usado."
+          message="El enlace puede ser inválido, haber expirado o haber sido usado."
         />
       ) : null}
 
       <ActionLink className="button button-primary full-width" to="/login">
-        Ir a iniciar sesion
+        Ir a iniciar sesión
       </ActionLink>
     </AuthShell>
   );

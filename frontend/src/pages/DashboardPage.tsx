@@ -1,29 +1,68 @@
-import { useNavigate } from 'react-router-dom';
-import { DashboardLayout } from '../components/layout/DashboardLayout';
-import { ActionLink } from '../components/ui/ActionLink';
-import { Button } from '../components/ui/Button';
-import { StatusPill } from '../components/ui/StatusPill';
-import { useAuth } from '../context/useAuth';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ticketsApi } from "../api/ticketsApi";
+import { DashboardLayout } from "../components/layout/DashboardLayout";
+import { ActionLink } from "../components/ui/ActionLink";
+import { Alert } from "../components/ui/Alert";
+import { Button } from "../components/ui/Button";
+import { StatusPill } from "../components/ui/StatusPill";
+import { useAuth } from "../context/useAuth";
+import type { TicketSummary } from "../types/ticket";
+import { formatRole, isDemoAdmin } from "../utils/roleLabels";
 
-const summaryCards = [
-  { label: 'Tickets abiertos', value: '24', tone: 'cyan' },
-  { label: 'En progreso', value: '8', tone: 'blue' },
-  { label: 'Resueltos', value: '132', tone: 'green' },
-  { label: 'Seguridad activa', value: '2FA', tone: 'teal' },
-];
+const emptySummary: TicketSummary = {
+  total: 0,
+  open: 0,
+  inProgress: 0,
+  resolved: 0,
+  closed: 0,
+  critical: 0,
+  assignedToMe: 0,
+};
 
 export function DashboardPage() {
-  const { user } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
+  const [summary, setSummary] = useState<TicketSummary>(emptySummary);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!token) return;
+
+    ticketsApi
+      .summary(token)
+      .then(setSummary)
+      .catch((caughtError) => {
+        setError(
+          caughtError instanceof Error
+            ? caughtError.message
+            : "No pudimos cargar el resumen de tickets.",
+        );
+      })
+      .finally(() => setIsLoading(false));
+  }, [token]);
+
+  const summaryCards = [
+    { label: "Total tickets", value: summary.total, tone: "cyan" },
+    { label: "Abiertos", value: summary.open, tone: "blue" },
+    { label: "En progreso", value: summary.inProgress, tone: "teal" },
+    { label: "Resueltos", value: summary.resolved, tone: "green" },
+    { label: "Criticos", value: summary.critical, tone: "red" },
+  ];
 
   return (
     <DashboardLayout>
+      {error ? <Alert type="error" message={error} /> : null}
       <section className="dashboard-grid">
         {summaryCards.map((card) => (
-          <article className={`metric-card metric-${card.tone}`} key={card.label}>
+          <article
+            className={`metric-card metric-${card.tone}`}
+            key={card.label}
+          >
             <span>{card.label}</span>
-            <strong>{card.value}</strong>
-            <small>Placeholder visual para la fase de tickets</small>
+            <strong>{isLoading ? "..." : card.value}</strong>
+            <small>Datos reales segun tu rol</small>
           </article>
         ))}
       </section>
@@ -35,8 +74,8 @@ export function DashboardPage() {
               <p className="eyebrow">Estado de cuenta</p>
               <h2>{user?.name}</h2>
             </div>
-            <StatusPill tone={user?.isDemo ? 'warn' : 'good'}>
-              {user?.isDemo ? 'Cuenta demo' : 'Cuenta real'}
+            <StatusPill tone={user?.isDemo ? "warn" : "good"}>
+              {user?.isDemo ? "Cuenta demo" : "Cuenta real"}
             </StatusPill>
           </div>
           <dl className="detail-list">
@@ -46,37 +85,45 @@ export function DashboardPage() {
             </div>
             <div>
               <dt>Rol</dt>
-              <dd>{user?.role}</dd>
+              <dd>{formatRole(user?.role)}</dd>
             </div>
             <div>
-              <dt>Correo verificado</dt>
-              <dd>{user?.emailVerifiedAt ? 'Si' : 'No'}</dd>
+              <dt>Asignados a mi</dt>
+              <dd>{summary.assignedToMe}</dd>
             </div>
             <div>
               <dt>2FA</dt>
-              <dd>{user?.isTwoFactorEnabled ? 'Activado' : 'Desactivado'}</dd>
+              <dd>{user?.isTwoFactorEnabled ? "Activado" : "Desactivado"}</dd>
             </div>
           </dl>
           <div className="button-row">
-            <Button onClick={() => navigate('/settings/security')}>
-              {user?.isTwoFactorEnabled ? 'Gestionar 2FA' : 'Activar 2FA'}
-            </Button>
-            <ActionLink className="button button-secondary" to="/settings/security">
-              Ir a seguridad
+            <Button onClick={() => navigate("/tickets")}>Ver tickets</Button>
+            <ActionLink className="button button-secondary" to="/tickets/new">
+              Crear ticket
+            </ActionLink>
+            <ActionLink className="button button-ghost" to="/settings/security">
+              Seguridad
             </ActionLink>
           </div>
+          {isDemoAdmin(user?.role) ? (
+            <p className="muted-text">
+              Esta cuenta demo permite explorar vistas administrativas, pero no
+              puede ejecutar acciones destructivas.
+            </p>
+          ) : null}
         </article>
 
         <article className="content-panel operations-panel">
           <p className="eyebrow">Operacion TI</p>
-          <h2>Flujo de soporte preparado</h2>
+          <h2>Flujo HelpDesk activo</h2>
           <p>
-            El dashboard muestra datos mock por ahora. La siguiente fase puede
-            conectar tickets reales sin cambiar la base visual.
+            Los tickets ya se filtran por rol: usuarios ven sus solicitudes,
+            técnicos ven asignados o sin asignar, y administración ve el
+            panorama completo.
           </p>
           <div className="timeline">
             <span>Ingreso</span>
-            <span>Clasificacion</span>
+            <span>Asignacion</span>
             <span>Resolucion</span>
           </div>
         </article>

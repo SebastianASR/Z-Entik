@@ -75,6 +75,23 @@ export class AuthService {
     });
 
     if (existingUser) {
+      if (!existingUser.emailVerifiedAt) {
+        const verificationToken =
+          await this.emailVerificationService.createVerificationToken(
+            existingUser.id,
+          );
+        await this.emailVerificationService.sendVerificationEmail(
+          existingUser,
+          verificationToken,
+        );
+
+        return {
+          message:
+            'Ya existe una cuenta pendiente. Enviamos un nuevo correo de verificación.',
+          user: this.toAuthUser(existingUser),
+        };
+      }
+
       throw new ConflictException('Este correo ya esta registrado');
     }
 
@@ -100,7 +117,7 @@ export class AuthService {
     );
 
     return {
-      message: 'Registro exitoso. Verifica tu correo antes de iniciar sesion.',
+      message: 'Registro exitoso. Verifica tu correo antes de iniciar sesión.',
       user: this.toAuthUser(user),
     };
   }
