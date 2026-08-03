@@ -4,60 +4,69 @@
 
 # Z Labs
 
-### Personal Software Brand by Sebastián Sandoval
+### Personal Software Brand by Sebastian Sandoval
 
 **Building software. Creating solutions.**
 
-Z Labs es mi marca personal de desarrollo de software, enfocada en construir aplicaciones modernas, escalables y orientadas a resolver problemas reales mediante tecnología.
+Z Labs es mi marca personal de desarrollo de software, enfocada en construir aplicaciones modernas, escalables y orientadas a resolver problemas reales mediante tecnologia.
 
 </div>
 
 ---
 
-# 🎫 Z-ENTIK — Sistema HelpDesk TI Full Stack
+# Z-ENTIK - Sistema HelpDesk TI Full Stack
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge\&logo=react\&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-2563EB?style=for-the-badge\&logo=typescript\&logoColor=white)
-![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge\&logo=nestjs\&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge\&logo=nodedotjs\&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge\&logo=postgresql\&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-111827?style=for-the-badge\&logo=prisma\&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-111827?style=for-the-badge\&logo=jsonwebtokens\&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge\&logo=docker\&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge\&logo=githubactions\&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-2563EB?style=for-the-badge&logo=typescript&logoColor=white)
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-111827?style=for-the-badge&logo=prisma&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-111827?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
+![Render](https://img.shields.io/badge/Render-111827?style=for-the-badge&logo=render&logoColor=white)
+![Brevo](https://img.shields.io/badge/Brevo-0B996E?style=for-the-badge&logo=maildotru&logoColor=white)
 
-**Z-Entik** es una aplicación Full Stack orientada a la gestión de tickets TI, soporte técnico y mesas de ayuda. El proyecto busca simular un sistema profesional de HelpDesk donde usuarios puedan crear solicitudes, técnicos puedan gestionarlas y administradores puedan supervisar estados, prioridades, roles y métricas operativas.
+**Z-Entik** es una aplicacion Full Stack orientada a la gestion de tickets TI, soporte tecnico y mesas de ayuda. El proyecto simula un sistema profesional de HelpDesk donde usuarios pueden crear solicitudes, tecnicos pueden gestionarlas y administradores pueden supervisar estados, prioridades, roles y metricas operativas.
 
-Este proyecto forma parte de mi portafolio profesional bajo la identidad **Z Labs**, y tiene como objetivo demostrar conocimientos en **frontend moderno, backend con API REST, autenticación segura, base de datos relacional, arquitectura separada, despliegue cloud, Docker, CI/CD y buenas prácticas de seguridad**.
+Este proyecto forma parte de mi portafolio profesional bajo la identidad **Z Labs**, y tiene como objetivo demostrar conocimientos en **frontend moderno, backend con API REST, autenticacion segura, 2FA por correo, base de datos relacional, arquitectura separada, despliegue cloud, roles, guards, Prisma ORM y buenas practicas de seguridad**.
 
 ---
 
-## 📌 Estado del Proyecto
+## Estado del Proyecto
 
-Actualmente el proyecto se encuentra en etapa inicial de desarrollo.
+Actualmente el proyecto cuenta con una version funcional desplegada en Render.
 
 ### Hitos completados
 
 * Frontend creado con React + TypeScript + Vite.
 * Backend creado con NestJS + TypeScript + Node.js.
-* Endpoint inicial `/health` implementado.
-* CORS configurado entre frontend y backend.
-* Primera conexión funcional entre React y NestJS.
-* Estética inicial basada en la identidad visual de Z Labs.
+* API REST protegida con JWT y guards.
+* Registro e inicio de sesion implementados.
+* Verificacion de correo con Brevo.
+* Recuperacion de contrasena por correo.
+* 2FA por correo para login y configuracion de seguridad.
+* Roles diferenciados: usuario, tecnico, administrador y demo admin.
+* Modulo HelpDesk de tickets implementado.
+* Base de datos PostgreSQL en Neon conectada con Prisma 7.
+* Seed de usuarios demo y tickets iniciales.
+* Despliegue separado de frontend y backend en Render.
+* Variables de entorno configuradas para produccion.
+* Estetica basada en la identidad visual de Z Labs.
 
 ---
 
-## 🌐 Demo
+## Demo
 
-La demo pública será agregada cuando el proyecto sea desplegado.
+La aplicacion se encuentra desplegada en Render.
 
 ```txt
-Demo: En desarrollo
+Frontend: https://z-entik-web.onrender.com
+Backend: https://z-entik-api.onrender.com
 ```
 
 ---
 
-## 📦 Repositorio
+## Repositorio
 
 ```txt
 https://github.com/SebastianASR/Z-Entik
@@ -67,16 +76,20 @@ https://github.com/SebastianASR/Z-Entik
 
 ## -> Vista inicial del proyecto
 
-La primera versión del proyecto ya permite comprobar la comunicación entre frontend y backend:
+La version actual permite comprobar el flujo completo entre frontend, backend, base de datos y servicios externos:
 
 ```txt
 Frontend React + TypeScript
         ↓
-Consulta HTTP
+API REST
         ↓
 Backend NestJS
         ↓
-Respuesta JSON desde la API
+Prisma ORM
+        ↓
+PostgreSQL Neon
+        ↓
+Brevo para correos transaccionales
 ```
 
 Endpoint de prueba:
@@ -97,28 +110,30 @@ Respuesta esperada:
 
 ---
 
-## 🚀 Objetivo del Proyecto
+## Objetivo del Proyecto
 
 Z-Entik busca representar un sistema HelpDesk TI moderno con funcionalidades como:
 
-* Registro e inicio de sesión de usuarios.
-* Autenticación segura mediante JWT.
-* Hash seguro de contraseñas.
-* Verificación en dos pasos por correo.
+* Registro e inicio de sesion de usuarios.
+* Autenticacion segura mediante JWT.
+* Hash seguro de contrasenas con Argon2.
+* Verificacion de correo por Brevo.
+* Recuperacion de contrasena por correo.
+* Verificacion en dos pasos por correo.
 * Roles diferenciados.
-* Creación y gestión de tickets.
-* Asignación de técnicos.
+* Creacion y gestion de tickets.
+* Asignacion de tecnicos.
 * Estados y prioridades.
 * Comentarios en tickets.
 * Dashboard por rol.
-* API REST documentada.
+* API REST estructurada.
 * Base de datos PostgreSQL en la nube.
-* Despliegue cloud.
-* Automatización mediante GitHub Actions.
+* Despliegue cloud con Render.
+* Seeds para entorno demo y portafolio.
 
 ---
 
-## 👥 Roles del Sistema
+## Roles del Sistema
 
 El sistema contempla tres tipos principales de usuario:
 
@@ -129,41 +144,42 @@ El sistema contempla tres tipos principales de usuario:
 * Comentar en sus solicitudes.
 * Consultar el estado de sus incidencias.
 
-### Técnico
+### Tecnico
 
 * Ver tickets asignados.
+* Ver tickets sin asignar disponibles para atencion.
 * Cambiar estado de tickets.
 * Responder comentarios.
 * Registrar avances de soporte.
 
 ### Administrador
 
-* Gestionar usuarios.
-* Asignar tickets a técnicos.
 * Ver todos los tickets.
-* Gestionar estados, prioridades y categorías.
-* Consultar métricas del sistema.
+* Asignar tickets a tecnicos.
+* Gestionar estados, prioridades y categorias.
+* Consultar metricas del sistema.
+* Acceder a vistas administrativas.
 
 ---
 
-## 🎫 Funcionalidades Planificadas
+## Funcionalidades Planificadas
 
-### Gestión de Tickets
+### Gestion de Tickets
 
 * Crear ticket.
 * Ver detalle de ticket.
 * Editar ticket.
 * Cambiar estado.
-* Asignar técnico.
+* Asignar tecnico.
 * Definir prioridad.
-* Definir categoría.
+* Definir categoria.
 * Agregar comentarios.
 * Cerrar ticket.
 
 ### Estados de Ticket
 
 * Abierto.
-* En revisión.
+* En revision.
 * En progreso.
 * En espera.
 * Resuelto.
@@ -174,9 +190,9 @@ El sistema contempla tres tipos principales de usuario:
 * Baja.
 * Media.
 * Alta.
-* Crítica.
+* Critica.
 
-### Categorías
+### Categorias
 
 * Hardware.
 * Software.
@@ -188,74 +204,89 @@ El sistema contempla tres tipos principales de usuario:
 
 ---
 
-## 🔐 Seguridad Planificada
+## Seguridad Planificada
 
-El proyecto busca implementar una autenticación más completa que un login tradicional.
+El proyecto implementa una autenticacion mas completa que un login tradicional.
 
-### Características de seguridad
+### Caracteristicas de seguridad
 
-* Hash seguro de contraseñas.
-* Autenticación con JWT.
+* Hash seguro de contrasenas con Argon2.
+* Autenticacion con JWT.
 * Guards de NestJS para proteger rutas.
 * Control de acceso basado en roles.
-* Validación de datos de entrada.
+* Validacion de datos de entrada con DTOs.
 * Variables de entorno para secretos.
-* Verificación en dos pasos por correo.
-* Protección de rutas privadas en frontend.
-* Separación entre datos públicos y privados.
+* Verificacion de correo por Brevo.
+* Recuperacion de contrasena por token temporal.
+* Verificacion en dos pasos por correo.
+* Tokens temporales separados para login 2FA.
+* Proteccion de rutas privadas en frontend.
+* Separacion entre datos publicos, privados y demo.
+* Bloqueo de acciones criticas para cuentas demo.
 
-### Autenticación proyectada
+### Autenticacion proyectada
 
 ```txt
-Usuario ingresa correo y contraseña
+Usuario ingresa correo y contrasena
         ↓
 Backend valida credenciales
         ↓
-Se verifica hash de contraseña
+Se verifica hash de contrasena
         ↓
-Se genera código 2FA
+Si la cuenta tiene 2FA activo, se genera codigo temporal
         ↓
-Se envía código por correo
+Se envia codigo por correo
         ↓
-Usuario confirma el código
+Usuario confirma el codigo
         ↓
-Backend genera JWT
+Backend genera JWT final
         ↓
 Frontend accede a rutas protegidas
 ```
 
 ---
 
-## 📧 2FA por Correo
+## 2FA por Correo
 
-El sistema contempla verificación en dos pasos mediante correo electrónico usando **Brevo API**.
+El sistema implementa verificacion en dos pasos mediante correo electronico usando **Brevo API**.
 
 Flujo esperado:
 
 ```txt
 Login correcto
         ↓
-Generar código temporal
+Backend detecta 2FA activo
         ↓
-Enviar código por correo
+Generar codigo temporal
         ↓
-Validar código
+Guardar hash del codigo
         ↓
-Crear sesión segura con JWT
+Enviar codigo por correo
+        ↓
+Validar codigo
+        ↓
+Marcar codigo como usado
+        ↓
+Crear sesion segura con JWT
 ```
+
+Tambien existe flujo para activar y desactivar 2FA desde la seccion de seguridad del usuario.
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologias Utilizadas
 
 ### Frontend
 
 * React
 * TypeScript
 * Vite
+* React Router
 * HTML5
 * CSS3
 * Fetch API
+* Diseno responsive
+* Modo claro / oscuro
 
 ### Backend
 
@@ -268,62 +299,78 @@ Crear sesión segura con JWT
 * Services
 * Controllers
 * Modules
+* Argon2
+* Passport JWT
 
 ### Base de Datos
 
 * PostgreSQL
 * Neon PostgreSQL
-* Prisma ORM
+* Prisma ORM 7
+* Prisma migrations
+* Prisma seed
 
-### Autenticación y Seguridad
+### Autenticacion y Seguridad
 
 * JWT
-* Hash seguro de contraseñas
+* Hash seguro de contrasenas
+* Verificacion de correo
+* Recuperacion de contrasena
 * 2FA por correo
 * Brevo API
 * Variables de entorno
+* Roles y guards
+* Bloqueo de acciones demo
 
 ### DevOps / Infraestructura
 
 * Git
 * GitHub
-* Docker
-* GitHub Actions
 * Render
 * Neon
+* Variables de entorno en produccion
+* Build separado de frontend y backend
+* Seed automatico para datos demo
 
 ---
 
-## 🧱 Arquitectura del Proyecto
+## Arquitectura del Proyecto
 
-El proyecto está organizado como un monorepo simple, separando frontend y backend en carpetas independientes.
+El proyecto esta organizado como un monorepo simple, separando frontend y backend en carpetas independientes.
 
 ```txt
 Z-Entik/
 │
 ├── frontend/
 │   ├── src/
+│   │   ├── api/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── routes/
+│   │   ├── types/
+│   │   ├── utils/
 │   │   ├── App.tsx
-│   │   ├── App.css
 │   │   └── main.tsx
 │   ├── package.json
 │   └── vite.config.ts
 │
 ├── backend/
+│   ├── prisma/
+│   │   ├── migrations/
+│   │   ├── schema.prisma
+│   │   └── seed.ts
 │   ├── src/
+│   │   ├── auth/
+│   │   ├── prisma/
+│   │   ├── tickets/
 │   │   ├── app.controller.ts
 │   │   ├── app.module.ts
 │   │   ├── app.service.ts
 │   │   └── main.ts
 │   ├── package.json
+│   ├── prisma.config.ts
 │   └── tsconfig.json
-│
-├── docs/
-│   └── assets/
-│       └── z-labs-logo.png
-│
-├── .github/
-│   └── workflows/
 │
 ├── README.md
 └── .gitignore
@@ -331,32 +378,39 @@ Z-Entik/
 
 ---
 
-## 🔌 Comunicación Frontend - Backend
+## Comunicacion Frontend - Backend
 
-El frontend se ejecuta en:
+El frontend se ejecuta localmente en:
 
 ```txt
 http://localhost:5173
 ```
 
-El backend se ejecuta en:
+El backend se ejecuta localmente en:
 
 ```txt
 http://localhost:3000
 ```
 
-Para permitir la comunicación entre ambos entornos, el backend tiene CORS configurado para aceptar solicitudes desde el frontend.
+En produccion, ambos servicios estan desplegados por separado en Render:
+
+```txt
+Frontend: https://z-entik-web.onrender.com
+Backend: https://z-entik-api.onrender.com
+```
+
+Para permitir la comunicacion entre ambos entornos, el backend tiene CORS configurado para aceptar solicitudes desde el frontend.
 
 ```ts
 app.enableCors({
-  origin: 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true,
 });
 ```
 
 ---
 
-## ⚙️ Configuración Local
+## Configuracion Local
 
 ### 1. Clonar el repositorio
 
@@ -365,9 +419,32 @@ git clone https://github.com/SebastianASR/Z-Entik.git
 cd Z-Entik
 ```
 
+Variables principales del backend:
+
+```txt
+DATABASE_URL=
+FRONTEND_URL=http://localhost:5173
+APP_BACKEND_URL=http://localhost:3000
+JWT_SECRET=
+JWT_EXPIRES_IN=1h
+BREVO_API_KEY=
+BREVO_SENDER_EMAIL=
+BREVO_SENDER_NAME=Z-Entik
+EMAIL_VERIFICATION_EXPIRES_MINUTES=30
+PASSWORD_RESET_EXPIRES_MINUTES=30
+TWO_FACTOR_CODE_EXPIRES_MINUTES=5
+TWO_FACTOR_LOGIN_TOKEN_EXPIRES_MINUTES=5
+```
+
+Variables principales del frontend:
+
+```txt
+VITE_API_URL=http://localhost:3000
+```
+
 ---
 
-## ▶️ Ejecutar Frontend
+## Ejecutar Frontend
 
 Entrar a la carpeta del frontend:
 
@@ -395,7 +472,7 @@ http://localhost:5173
 
 ---
 
-## ▶️ Ejecutar Backend
+## Ejecutar Backend
 
 Entrar a la carpeta del backend:
 
@@ -407,6 +484,24 @@ Instalar dependencias:
 
 ```bash
 npm install
+```
+
+Generar cliente Prisma:
+
+```bash
+npm run prisma:generate
+```
+
+Ejecutar migraciones en desarrollo:
+
+```bash
+npm run prisma:migrate
+```
+
+Ejecutar seed:
+
+```bash
+npm run prisma:seed
 ```
 
 Ejecutar servidor de desarrollo:
@@ -429,9 +524,9 @@ http://localhost:3000/health
 
 ---
 
-## 🧪 Prueba de Conexión
+## Prueba de Conexion
 
-Para probar la conexión completa:
+Para probar la conexion completa:
 
 1. Ejecutar el backend en una terminal.
 2. Ejecutar el frontend en otra terminal.
@@ -441,50 +536,53 @@ Para probar la conexión completa:
 http://localhost:5173
 ```
 
-La pantalla inicial debe mostrar el estado de la API:
+La aplicacion debe permitir:
 
 ```txt
-Servicio: Z-Entik API
-Estado: ok
-Última respuesta: timestamp generado por el backend
+Registro de usuario
+Verificacion de correo
+Inicio de sesion
+Activacion de 2FA
+Creacion de tickets
+Consulta de tickets por rol
 ```
 
 ---
 
-## 🗄️ Base de Datos Planificada
+## Base de Datos Planificada
 
-La base de datos usará PostgreSQL con Prisma ORM.
+La base de datos usa PostgreSQL con Prisma ORM.
 
-Entidades principales proyectadas:
+Entidades principales:
 
 ```txt
 User
-Role
 Ticket
 TicketComment
 TicketCategory
 TicketPriority
 TicketStatus
 TwoFactorCode
+EmailVerificationToken
+PasswordResetToken
 ```
 
-Relaciones principales esperadas:
+Relaciones principales:
 
 ```txt
-User 1 ─── N Ticket
-User 1 ─── N TicketComment
-Ticket 1 ─── N TicketComment
-Role 1 ─── N User
-TicketCategory 1 ─── N Ticket
-TicketPriority 1 ─── N Ticket
-TicketStatus 1 ─── N Ticket
+User 1 --- N Ticket
+User 1 --- N TicketComment
+Ticket 1 --- N TicketComment
+User 1 --- N EmailVerificationToken
+User 1 --- N PasswordResetToken
+User 1 --- N TwoFactorCode
 ```
 
 ---
 
-## 🧭 Roadmap
+## Roadmap
 
-### Fase 1 — Base Full Stack
+### Fase 1 - Base Full Stack
 
 * Crear repo separado.
 * Crear frontend con React + TypeScript.
@@ -493,72 +591,82 @@ TicketStatus 1 ─── N Ticket
 * Crear endpoint `/health`.
 * Conectar frontend con backend.
 
-### Fase 2 — Base de Datos
+### Fase 2 - Base de Datos
 
 * Configurar Prisma.
 * Conectar PostgreSQL.
 * Crear modelos iniciales.
-* Ejecutar migración inicial.
-* Probar conexión con Neon.
+* Ejecutar migracion inicial.
+* Probar conexion con Neon.
 
-### Fase 3 — Autenticación
+### Fase 3 - Autenticacion
 
 * Registro de usuarios.
 * Login.
-* Hash seguro de contraseñas.
+* Hash seguro de contrasenas.
 * JWT.
-* Guards de autenticación.
+* Guards de autenticacion.
 * Roles.
 
-### Fase 4 — 2FA
+### Fase 4 - 2FA
 
-* Generar código temporal.
-* Enviar código por correo con Brevo.
-* Validar código.
-* Activar sesión segura.
+* Generar codigo temporal.
+* Guardar hash del codigo.
+* Enviar codigo por correo con Brevo.
+* Validar codigo.
+* Marcar codigos usados.
+* Activar sesion segura.
 
-### Fase 5 — Tickets
+### Fase 5 - Tickets
 
 * Crear tickets.
 * Listar tickets.
 * Ver detalle.
 * Actualizar estado.
-* Asignar técnico.
+* Asignar tecnico.
 * Comentar ticket.
 
-### Fase 6 — Dashboard
+### Fase 6 - Dashboard
 
 * Dashboard de usuario.
-* Dashboard de técnico.
+* Dashboard de tecnico.
 * Dashboard de administrador.
-* Métricas de tickets.
+* Metricas de tickets.
 
-### Fase 7 — Infraestructura
+### Fase 7 - Infraestructura
 
-* Docker para backend.
-* Docker para frontend.
-* GitHub Actions.
-* Deploy en Render.
-* Variables de entorno en producción.
-
----
-
-## 📌 Estado Actual
-
-* Proyecto en desarrollo.
-* Frontend creado.
-* Backend creado.
-* Comunicación inicial frontend-backend funcionando.
-* Diseño inicial inspirado en Z Labs.
-* Próxima fase: PostgreSQL + Prisma ORM.
+* Deploy frontend en Render.
+* Deploy backend en Render.
+* PostgreSQL en Neon.
+* Variables de entorno en produccion.
+* Build y start commands configurados.
+* Seed de datos demo en despliegue.
 
 ---
 
-## 🧑‍💻 Autor
+## Estado Actual
 
-Desarrollado por Sebastián Sandoval Romero
-Ingeniero en Informática
-Perfil orientado a desarrollo **Backend / Full-Stack**
+* Proyecto en desarrollo avanzado para portafolio.
+* Frontend completo de autenticacion y HelpDesk.
+* Backend funcional con NestJS, Prisma y PostgreSQL.
+* Autenticacion JWT implementada.
+* Verificacion de correo implementada con Brevo.
+* Recuperacion de contrasena implementada.
+* 2FA por correo implementado.
+* Roles y guards implementados.
+* Tickets HelpDesk implementados.
+* Usuarios demo y tickets demo disponibles mediante seed.
+* Frontend y backend desplegados en Render.
+* Base de datos desplegada en Neon.
+* Proximas mejoras: refinamiento visual, pruebas ampliadas, documentacion API y endurecimiento de produccion.
+
+---
+
+## Autor
+
+Desarrollado por Sebastian Sandoval Romero  
+Ingeniero en Informatica  
+Perfil orientado a desarrollo **Backend / Full-Stack**  
 Santiago, Chile
 
 * [LinkedIn](https://www.linkedin.com/in/sebastian-andre-sandoval-romero-115710296/)
@@ -573,3 +681,4 @@ Santiago, Chile
 **Building software. Creating solutions.**
 
 </div>
+
