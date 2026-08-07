@@ -8,6 +8,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { UserRole } from '@prisma/client';
 import type { Response } from 'express';
 import type { AuthUser } from './auth-user.type';
@@ -30,31 +31,37 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
   @Post('register')
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('2fa/verify-login')
   verifyTwoFactorLogin(@Body() dto: VerifyTwoFactorLoginDto) {
     return this.authService.verifyTwoFactorLogin(dto);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('verify-email')
   verifyEmail(@Body() dto: VerifyEmailDto) {
     return this.authService.verifyEmail(dto.token);
   }
 
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
   @Post('forgot-password')
   forgotPassword(@Body() dto: ForgotPasswordDto) {
     return this.authService.forgotPassword(dto);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('reset-password')
   resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto);
@@ -98,12 +105,14 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('2fa/request-enable')
   requestEnableTwoFactor(@CurrentUser() user: AuthUser) {
     return this.authService.requestEnableTwoFactor(user);
   }
 
   @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('2fa/confirm-enable')
   confirmEnableTwoFactor(
     @CurrentUser() user: AuthUser,
@@ -113,12 +122,14 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('2fa/request-disable')
   requestDisableTwoFactor(@CurrentUser() user: AuthUser) {
     return this.authService.requestDisableTwoFactor(user);
   }
 
   @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('2fa/confirm-disable')
   confirmDisableTwoFactor(
     @CurrentUser() user: AuthUser,
